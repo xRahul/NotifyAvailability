@@ -13,7 +13,6 @@ import {
 } from 'react-native'
 
 import BackgroundTask from 'react-native-background-task'
-import queueFactory from 'react-native-queue'
 import PushNotification from 'react-native-push-notification'
 
 
@@ -35,6 +34,12 @@ PushNotification.configure({
 })
 
 const checkUrlForText = async (url, searchText) => {
+
+  if (!url || !searchText) {
+    BackgroundTask.cancel()
+    return
+  }
+
   if (url.substring(0, 4) != "http") {
     url = 'https://'+url
   }
@@ -53,28 +58,10 @@ const checkUrlForText = async (url, searchText) => {
 
 BackgroundTask.define(async () => {
 
-  // Init queue
-  queue = await queueFactory();
+  const urlBackgroundTask = await AsyncStorage.getItem('url')
+  const searchTextBackgroundTask = await AsyncStorage.getItem('searchText')
 
-  // Register job worker
-  queue.addWorker('background-check-url-for-search-text', async (id, payload) => {
-
-    checkUrlForText(payload.url, payload.searchText)
-
-    queue.createJob(
-      'background-check-url-for-search-text',
-      { url: payload.url, searchText: payload.searchText }, // Supply the image url we want prefetched in this job to the payload.
-      { attempts: 5, timeout: 23000 }, // Retry job on failure up to 5 times. Timeout job in 15 sec (prefetch is probably hanging if it takes that long).
-      false // Must pass false as the last param so the queue starts up in the background task instead of immediately.
-    );
-  });
-
-  // Start the queue with a lifespan
-  // IMPORTANT: OS background tasks are limited to 30 seconds or less.
-  // NOTE: Queue lifespan logic will attempt to stop queue processing 500ms less than passed lifespan for a healthy shutdown buffer.
-  // IMPORTANT: Queue processing started with a lifespan will ONLY process jobs that have a defined timeout set.
-  // Additionally, lifespan processing will only process next job if job.timeout < (remainingLifespan - 500).
-  await queue.start(25000); // Run queue for at most 25 seconds.
+  await checkUrlForText(urlBackgroundTask, searchTextBackgroundTask)
 
   // finish() must be called before OS hits timeout.
   BackgroundTask.finish();
@@ -90,14 +77,8 @@ export default class App extends Component<{}> {
       url: '',
       searchText: '',
       taskSet: 'no',
-      queue: null,
       loading: false
     };
-
-    queueFactory()
-      .then(queue => {
-        this.setState({queue});
-      })
 
     this.initAsyncStorage()
   }
@@ -106,22 +87,28 @@ export default class App extends Component<{}> {
     AsyncStorage.getItem('url').then((value) => {if (value) this.persistState('url', value)}).catch((error) => console.log(error))
     AsyncStorage.getItem('searchText').then((value) => {if (value) this.persistState('searchText', value)}).catch((error) => console.log(error))
     AsyncStorage.getItem('taskSet').then((value) => {if (value) this.persistState('taskSet', value)}).catch((error) => console.log(error))
-    // AsyncStorage.getItem('queue').then((value) => {if (value) this.persistState('queue', value)}).catch((error) => console.log(error))
     // AsyncStorage.getItem('loading').then((value) => {if (value) this.persistState('loading', value)}).catch((error) => console.log(error))
   }
 
   componentDidMount() {
     // Optional: Check if the device is blocking background tasks or not
     this.checkStatus()
-    BackgroundTask.schedule(); // Schedule the task to run every ~15 min if app is closed.
+
+    if (this.state.taskSet == 'yes') {
+      // Schedule the task to run every ~15 min if app is closed.
+      BackgroundTask.cancel()
+      BackgroundTask.schedule()
+    } else {
+      BackgroundTask.cancel()
+    }
   }
 
-  async persistState(key, value) {
+  persistState(key, value) {
     var obj  = {}
     obj[key] = value
     this.setState(obj)
     if (typeof value != 'boolean') {
-      await AsyncStorage.setItem(key, value)
+      AsyncStorage.setItem(key, value)
     }
   }
 
@@ -142,22 +129,16 @@ export default class App extends Component<{}> {
     }
   }
 
-  createPrefetchJobs() {
+  async createPrefetchJobs() {
     this.persistState('loading', true)
     this.persistState('url', this.state.url.trim())
-
-    // Create the prefetch job for the first <Image> component.
-    this.state.queue.createJob(
-      'background-check-url-for-search-text',
-      { url: this.state.url, searchText: this.state.searchText }, // Supply the image url we want prefetched in this job to the payload.
-      { attempts: 5, timeout: 23000 }, // Retry job on failure up to 5 times. Timeout job in 15 sec (prefetch is probably hanging if it takes that long).
-      false // Must pass false as the last param so the queue starts up in the background task instead of immediately.
-    );
-
     this.persistState('taskSet', 'yes')
-    this.persistState('loading', false)
 
-    checkUrlForText(this.state.url, this.state.searchText)
+    BackgroundTask.cancel()
+    BackgroundTask.schedule()
+
+    await checkUrlForText(this.state.url, this.state.searchText)
+    this.persistState('loading', false)
   }
 
   deletePrefetchJobs() {
@@ -191,14 +172,12 @@ export default class App extends Component<{}> {
         {this.state.taskSet == 'no' && <Button
           title={"Start Checking"}
           onPress={ this.createPrefetchJobs.bind(this) }
-          disabled={!this.state.queue}
         /> }
         {this.state.taskSet == 'yes' && <Button
           title={"Stop Checking"}
           onPress={ this.deletePrefetchJobs.bind(this) }
-          disabled={!this.state.queue}
         /> }
-        {!this.state.queue || this.state.loading  && <ActivityIndicator size="large" color="#7a42f4" /> }
+        {this.state.loading  && <ActivityIndicator size="large" color="#7a42f4" /> }
       </ScrollView>
     );
   }

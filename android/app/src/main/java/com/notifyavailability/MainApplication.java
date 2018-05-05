@@ -3,6 +3,7 @@ package com.notifyavailability;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
 import io.realm.react.RealmReactPackage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNBackgroundFetchPackage(),
             new ReactNativePushNotificationPackage(),
             new BackgroundTaskPackage(),
             new RealmReactPackage()
