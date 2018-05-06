@@ -31,4 +31,4 @@
 
 One use case is that we enter the URL of a movie booking website to get notified when it opens booking for a Cinema on the day we want.
 
-![Movie Booking Use Case](https://github.com/xRahul/NotifyAvailability/raw/e25af47daf950779cc446153e08603fe04cc72fd/screenshots/movie-use-case-notify-availability.jpg)
+![Movie Booking Use Case](screenshots/movie-use-case-notify-availability.jpg)
