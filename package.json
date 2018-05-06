@@ -11,7 +11,6 @@
     "babel-core": "^7.0.0-0",
     "eslint": "^4.0.0",
     "moment": "^2.22.1",
-    "moment-timezone": "^0.5.16",
     "react": "16.3.1",
     "react-native": "0.55.3",
     "react-native-background-fetch": "^2.4.1",
