@@ -1,25 +1,34 @@
-### NotifyAvailability
+# NotifyAvailability
 
-#### Overview
-* This app asks the user for a `URL`, `pageType` (Desktop/Mobile) and a `search string`.
-* Then it creates a background task to notify the user if that string is present on the web page (case-insensitive).
+### Overview
+
+* This app takes input from the user to set up background periodic check of a webpage for a text.
+* It creates a background task to notify the user if a text is present on the web page or not.
 * This task is executed repeatedly once every ~15 mins depending on the OS.
-* It will also show when the it was last checked.
+* It will also show the time check was last made.
 
-#### Tech Stack
+#### Input Criteria
+
+* This app asks the user for a `URL` and a `search text`.
+* You can also set whether to get notification when search text `is present` on the webpage or when it `is absent`.
+* You can set the webpage type to be `desktop` or `mobile` to get different html accordingly.
+* You can set the search to be `case sensitive` or `case insensitive`.
+
+### Tech Stack
+
 * React Native
   * react-native-background-fetch
   * react-native-background-task
   * react-native-push-notification
 * moment.js
 
-#### Testing
+### Testing
+
 * Tested on Android only.
 * iOS testing is pending (device unavailable)
 
-#### Use Case
-* One use case is that we enter the URL of a movie booking website to get notified when it opens booking for a Cinema on the day we want.
+### Use Case
 
-
+One use case is that we enter the URL of a movie booking website to get notified when it opens booking for a Cinema on the day we want.
 
 ![Movie Booking Use Case](https://github.com/xRahul/NotifyAvailability/raw/e25af47daf950779cc446153e08603fe04cc72fd/screenshots/movie-use-case-notify-availability.jpg)
