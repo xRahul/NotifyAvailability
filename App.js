@@ -9,12 +9,18 @@ import {
   Image,
   ActivityIndicator,
   AsyncStorage,
-  TextInput
+  TextInput,
+  WebView,
+  Picker
 } from 'react-native'
 
 import BackgroundTask from 'react-native-background-task'
 import PushNotification from 'react-native-push-notification'
 
+const USER_AGENT_DESKTOP = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.18 Safari/537.36"
+const WEB_PLATFORM_DESKTOP = 'desktop'
+const WEB_PLATFORM_MOBILE = 'mobile'
+const WEB_PLATFORM_TABLET = 'tablet'
 
 PushNotification.configure({
   // (required) Called when a remote or local notification is opened or received
@@ -33,7 +39,7 @@ PushNotification.configure({
   requestPermissions: true,
 })
 
-const checkUrlForText = async (url, searchText) => {
+const checkUrlForText = async (url, searchText, webPlatformType) => {
 
   if (!url || !searchText) {
     BackgroundTask.cancel()
@@ -44,7 +50,14 @@ const checkUrlForText = async (url, searchText) => {
     url = 'https://'+url
   }
 
-  const response = await fetch(url)
+  let headers = new Headers()
+  if (webPlatformType == WEB_PLATFORM_DESKTOP) {
+    headers.set("User-Agent", USER_AGENT_DESKTOP)
+  }
+
+  const response = await fetch(url, {
+    headers: headers
+  })
   console.log({response: response})
   const htmlText = await response.text()
   console.log({htmlText: htmlText})
@@ -60,8 +73,9 @@ BackgroundTask.define(async () => {
 
   const urlBackgroundTask = await AsyncStorage.getItem('url')
   const searchTextBackgroundTask = await AsyncStorage.getItem('searchText')
+  const webPlatformTypeBackgroundTask = await AsyncStorage.getItem('webPlatformType')
 
-  await checkUrlForText(urlBackgroundTask, searchTextBackgroundTask)
+  await checkUrlForText(urlBackgroundTask, searchTextBackgroundTask, webPlatformTypeBackgroundTask)
 
   // finish() must be called before OS hits timeout.
   BackgroundTask.finish();
@@ -77,16 +91,32 @@ export default class App extends Component<{}> {
       url: '',
       searchText: '',
       taskSet: 'no',
-      loading: false
+      loading: false,
+      webPlatformType: WEB_PLATFORM_MOBILE
     };
 
     this.initAsyncStorage()
   }
 
-  initAsyncStorage() {
-    AsyncStorage.getItem('url').then((value) => {if (value) this.persistState('url', value)}).catch((error) => console.log(error))
-    AsyncStorage.getItem('searchText').then((value) => {if (value) this.persistState('searchText', value)}).catch((error) => console.log(error))
-    AsyncStorage.getItem('taskSet').then((value) => {if (value) this.persistState('taskSet', value)}).catch((error) => console.log(error))
+  shouldUseAsyncStorage(stateKey) {
+    if (typeof this.state[stateKey] != 'boolean' && stateKey != 'loading') {
+      return true;
+    }
+    return false;
+  }
+
+  async initAsyncStorage() {
+    for (var stateKey in this.state) {
+      if (this.state.hasOwnProperty(stateKey) && this.shouldUseAsyncStorage(stateKey)) {
+        await AsyncStorage.getItem(stateKey)
+                      .then((value) => {if (value) this.persistState(stateKey, value)})
+                      .catch((error) => console.log(error))
+      }
+  }
+    // AsyncStorage.getItem('url').then((value) => {if (value) this.persistState('url', value)}).catch((error) => console.log(error))
+    // AsyncStorage.getItem('searchText').then((value) => {if (value) this.persistState('searchText', value)}).catch((error) => console.log(error))
+    // AsyncStorage.getItem('taskSet').then((value) => {if (value) this.persistState('taskSet', value)}).catch((error) => console.log(error))
+    // AsyncStorage.getItem('webPlatformType').then((value) => {if (value) this.persistState('webPlatformType', value)}).catch((error) => console.log(error))
     // AsyncStorage.getItem('loading').then((value) => {if (value) this.persistState('loading', value)}).catch((error) => console.log(error))
   }
 
@@ -107,9 +137,11 @@ export default class App extends Component<{}> {
     var obj  = {}
     obj[key] = value
     this.setState(obj)
-    if (typeof value != 'boolean') {
+    if (this.shouldUseAsyncStorage(key)) {
       AsyncStorage.setItem(key, value)
     }
+
+    return Promise.resolve()
   }
 
   async checkStatus() {
@@ -137,7 +169,7 @@ export default class App extends Component<{}> {
     BackgroundTask.cancel()
     BackgroundTask.schedule()
 
-    await checkUrlForText(this.state.url, this.state.searchText)
+    await checkUrlForText(this.state.url, this.state.searchText, this.state.webPlatformType)
     this.persistState('loading', false)
   }
 
@@ -146,10 +178,33 @@ export default class App extends Component<{}> {
     this.persistState('taskSet', 'no')
   }
 
+  pickerValueChanged(newValue) {
+    this.persistState('webPlatformType', newValue)
+    this.refreshWebView()
+
+  }
+
+  async refreshWebView() {
+    this.persistState('loading', true)
+    const url = this.state.url
+    await this.persistState('url', '')
+    await this.persistState('url', url)
+    this.persistState('loading', false)
+  }
+
   render() {
     console.log(this.state)
+
+    const webViewProps = {}
+    if (this.state.webPlatformType === WEB_PLATFORM_DESKTOP) {
+      webViewProps.userAgent = USER_AGENT_DESKTOP;
+    }
+
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps={'always'}
+      >
         <TextInput
           onChangeText={(url) => this.persistState('url', url)}
           value={this.state.url}
@@ -169,6 +224,13 @@ export default class App extends Component<{}> {
           placeholder={'Enter Search String'}
           ref={(input) => this.searchTextInput = input }
         />
+        <Picker
+          selectedValue={this.state.webPlatformType}
+          onValueChange={(itemValue, itemIndex) => this.pickerValueChanged(itemValue)}>
+          <Picker.Item label="Mobile" value={WEB_PLATFORM_MOBILE} />
+          <Picker.Item label="Desktop" value={WEB_PLATFORM_DESKTOP} />
+          <Picker.Item label="Tablet" value={WEB_PLATFORM_TABLET} />
+        </Picker>
         {this.state.taskSet == 'no' && <Button
           title={"Start Checking"}
           onPress={ this.createPrefetchJobs.bind(this) }
@@ -178,6 +240,15 @@ export default class App extends Component<{}> {
           onPress={ this.deletePrefetchJobs.bind(this) }
         /> }
         {this.state.loading  && <ActivityIndicator size="large" color="#7a42f4" /> }
+        {this.state.taskSet == 'yes' && this.state.url != '' &&
+          <WebView
+            style={styles.webview}
+            source={{ uri: this.state.url }}
+            dataDetectorTypes={'all'}
+            scalesPageToFit={false}
+            { ...webViewProps }
+            />
+        }
       </ScrollView>
     );
   }
@@ -189,5 +260,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+  },
+  webview: {
+    height: 1500,
+    marginTop: 20
   }
 });
