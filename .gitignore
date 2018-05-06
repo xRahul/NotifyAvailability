@@ -86,6 +86,7 @@ buck-out/
 android/app/libs
 android/keystores/debug.keystore
 android/.gradle
+android/.gradle/*
 
 # android signing key
 key/my-release-key.keystore

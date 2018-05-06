@@ -69,7 +69,7 @@ const checkUrlForText = async (url, searchText, webPlatformType) => {
   const htmlText = await response.text()
   console.log({htmlText: htmlText})
 
-  if (htmlText.includes(searchText)) {
+  if (htmlText.toLowerCase().includes(searchText.toLowerCase())) {
     PushNotification.localNotification({
       message: searchText + ' was found on ' + url
     })
