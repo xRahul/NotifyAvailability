@@ -17,4 +17,4 @@
 #### Use Case
 * One use case is that we enter the URL of a movie booking website to get notified when it opens booking for a Cinema on the day we want.
 
-![Movie Booking Use Case](screenshots/movie-use-case-notify-availability.jpeg)
+![Movie Booking Use Case](screenshots/movie-use-case-notify-availability.jpg)
