@@ -3,7 +3,8 @@
 #### Overview
 * This app asks the user for a `URL`, `pageType` (Desktop/Mobile) and a `search string`.
 * Then it creates a background task to notify the user if that string is present on the web page.
-* This task is executed repeatedly once every ~15 mins depending on the OS
+* This task is executed repeatedly once every ~15 mins depending on the OS.
+* It will also show when the it was last checked.
 
 #### Tech Stack
 * React Native

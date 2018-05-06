@@ -6,7 +6,6 @@ import com.facebook.react.ReactApplication;
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.jamesisaac.rnbackgroundtask.BackgroundTaskPackage;
-import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -29,8 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
           new MainReactPackage(),
             new RNBackgroundFetchPackage(),
             new ReactNativePushNotificationPackage(),
-            new BackgroundTaskPackage(),
-            new RealmReactPackage()
+            new BackgroundTaskPackage()
       );
     }
 
