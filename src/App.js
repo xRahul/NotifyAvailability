@@ -75,7 +75,7 @@ const checkUrlForText = async (url, searchText, webPlatformType) => {
     })
   }
 
-  AsyncStorage.setItem('lastChecked', moment().valueOf().toString())
+  await AsyncStorage.setItem('lastChecked', moment().valueOf().toString())
 }
 
 BackgroundTask.define(async () => {
