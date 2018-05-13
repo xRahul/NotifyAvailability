@@ -2,6 +2,11 @@ language: android
 jdk: oraclejdk8
 sudo: required
 dist: precise
+addons:
+  sonarcloud:
+    organization: "xrahul-github" # the key of the org you chose at step #3
+    token:
+      secure: "omU7PISYgH4Lu6zkro48JiGrrQ44BTzFDcEktmpNEUlEeoC7CHvHac+lYnbYfPuHfcG2EbUMaerp2qRzMoMBprwyeEjvZTLjNlnAJmJRZP/Sz/Uy/vGpSln0c4MxcRo03heqyA541ixrv+eVjnb9/DXb2aMWviaCCOPHom4mkoJJrIFpMQlBst6eNgraFh4p82WdVpnoDCbCXlIAjJr5NQZeq+IHQZobyutpRw+lRybQq3mTY8eyq93G+1Q52++S1H9deyGPSasnKMFK7Ce56s9a5dwXmvSp6wt0NBqmkDffQdSEulAM5fwA0JIeMIZOQh9f5DDD69no3kMEYgVhCpLflTpjmxKiQ2CnM55oJfc7fInGBDwEEgakQkv0T8I49rfivFqGYByUBn5231jchgp56einihrAILm9MAP5x6FF48uznIVF2sC7dQQEAacWiX/IcQWnIqkjqAV5nEFf7NJWXuXlQuwM2a613D7CNdDqbcyIMJ9afaNSuxS3sz56hLHyDG1EZ+vKbJkt3/QQSkedC6A0YE/CYl+/O51VZV+cbqDS01yzKY5RrgjwaKh3GtBm+tsHKsn1lKEyMgoSHPJGxewnC+QUKPKEXaW5AdUYq7T98mXoDqxFc/GM+h9J8ROEpWyv24A7AUr/CPjnT7H5bG7jbAVGL5KxJXJpdjw="
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -43,3 +48,6 @@ script:
   - cd android && ./gradlew clean
 after_script:
   - ./gradlew assembleDebug
+  - ./gradlew clean build
+  - ./gradlew build check
+  - ./gradlew sonarqube
