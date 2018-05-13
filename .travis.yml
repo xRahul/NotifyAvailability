@@ -42,4 +42,4 @@ script:
   - npm run ci
   - cd android && ./gradlew clean
 after_script:
-  - ./gradlew assemble
+  - ./gradlew assembleDebug
