@@ -1,10 +1,45 @@
-language: node_js
-
-node_js:
-  - "6"
-
+language: android
+jdk: oraclejdk8
+sudo: required
+dist: precise
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
+  yarn: true
   directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
     - node_modules
-
-script: npm run ci
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-23.0.1
+    - build-tools-23.0.2
+    - build-tools-25.0.2
+    - build-tools-26.0.2
+    - android-23
+    - android-26
+    - extra-android-m2repository
+    - extra-google-google_play_services
+    - extra-google-m2repository
+licenses:
+  - android-sdk-preview-license-.+
+  - android-sdk-license-.+
+  - google-gdk-license-.+
+before_install:
+  - nvm install 6
+  - node --version
+  - travis_retry curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+  - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - travis_retry sudo apt-get update -qq
+  - travis_retry sudo apt-get install -y -qq yarn
+  - chmod +x ./android/gradlew
+install:
+  - yarn install
+script:
+  - npm run ci
+  - cd android && ./gradlew clean
+after_script:
+  - ./gradlew assemble
