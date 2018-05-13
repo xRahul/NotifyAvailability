@@ -1,8 +1,6 @@
-import {
-  StyleSheet
-} from 'react-native'
+import { StyleSheet } from 'react-native';
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     padding: 10,
     flex: 1,
@@ -11,31 +9,33 @@ export const styles = StyleSheet.create({
   },
   webview: {
     height: 1500,
-    marginTop: 20
+    marginTop: 20,
   },
   pickerOverView: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   pickerText: {
   },
   pickerPicker: {
-    flex: 1
+    flex: 1,
   },
   switchOverView: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   switchText: {
   },
   switchSwitch: {
-    flex: 1
+    flex: 1,
   },
   lastCheckedText: {
     marginBottom: 5,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   checkingButton: {
 
-  }
+  },
 });
+
+export { styles as default };
