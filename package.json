@@ -13,8 +13,8 @@
     "@babel/core": "^7.0.0-0",
     "babel-core": "^7.0.0-0",
     "moment": "^2.22.1",
-    "react": "16.3.1",
-    "react-native": "0.55.3",
+    "react": "16.3.2",
+    "react-native": "0.55.4",
     "react-native-background-fetch": "^2.4.1",
     "react-native-background-task": "^0.2.1",
     "react-native-push-notification": "^3.0.2"
@@ -31,7 +31,7 @@
     "eslint-plugin-prefer-object-spread": "^1.2.1",
     "eslint-plugin-react": "^7.8.1",
     "jest": "22.4.3",
-    "react-test-renderer": "16.3.1"
+    "react-test-renderer": "16.3.2"
   },
   "jest": {
     "preset": "react-native"
