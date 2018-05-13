@@ -48,6 +48,4 @@ script:
   - cd android && ./gradlew clean
 after_script:
   - ./gradlew assembleDebug
-  - ./gradlew clean build
-  - ./gradlew build check
   - ./gradlew sonarqube
