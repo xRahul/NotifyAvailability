@@ -1,5 +1,7 @@
 # NotifyAvailability
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/xRahul/NotifyAvailability.svg)](https://greenkeeper.io/)
+
 
 [![GitHub license](https://img.shields.io/github/license/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/blob/master/License.txt)
 [![Build Status](https://travis-ci.org/xRahul/NotifyAvailability.svg?branch=master)](https://travis-ci.org/xRahul/NotifyAvailability)
