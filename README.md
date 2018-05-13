@@ -7,8 +7,11 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e1399210d8914483a7d5ecde14665376)](https://www.codacy.com/app/xRahul/NotifyAvailability)
 [![Codeclimate Maintainability](https://api.codeclimate.com/v1/badges/5ff836f879789d82ce9b/maintainability)](https://codeclimate.com/github/xRahul/NotifyAvailability/maintainability)
 
-
-
+[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=alert_status)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
+[![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=bugs)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
+[![SonarCloud Maintainability](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
+[![SonarCloud Security](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=security_rating)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
+[![SonarCloud Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
 
 
 ### Overview
