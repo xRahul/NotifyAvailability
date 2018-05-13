@@ -6,6 +6,7 @@
 [![Releases](https://img.shields.io/github/release/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/releases/latest)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e1399210d8914483a7d5ecde14665376)](https://www.codacy.com/app/xRahul/NotifyAvailability)
 [![Codeclimate Maintainability](https://api.codeclimate.com/v1/badges/5ff836f879789d82ce9b/maintainability)](https://codeclimate.com/github/xRahul/NotifyAvailability/maintainability)
+[![CodeFactor](https://www.codefactor.io/repository/github/xrahul/notifyavailability/badge)](https://www.codefactor.io/repository/github/xrahul/notifyavailability)
 
 [![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=alert_status)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
 [![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=bugs)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
