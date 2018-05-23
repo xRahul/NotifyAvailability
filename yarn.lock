@@ -4844,9 +4844,9 @@ react-is@^16.3.2:
   version "16.3.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.3.2.tgz#f4d3d0e2f5fbb6ac46450641eb2e25bf05d36b22"
 
-react-native-background-fetch@2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/react-native-background-fetch/-/react-native-background-fetch-2.4.2.tgz#1ef2b91f9e0b8606aeef28f6e8d6a61ce30b18ac"
+react-native-background-fetch@2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/react-native-background-fetch/-/react-native-background-fetch-2.4.3.tgz#4621cca2a8f9e96edbf0556afcd04873bd698f37"
   dependencies:
     fast-plist "^0.1.2"
     plist "^2.0.1"
