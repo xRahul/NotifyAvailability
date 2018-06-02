@@ -1,4 +1,4 @@
-![asset 1-8](https://user-images.githubusercontent.com/38810169/40872729-06168d0e-6675-11e8-9537-af0a0f133d11.png)
+
 
 # NotifyAvailability
 
