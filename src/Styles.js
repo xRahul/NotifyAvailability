@@ -38,4 +38,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { styles as default };
+export default styles;

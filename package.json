@@ -1,5 +1,5 @@
 {
-  "name": "NotifyAvailability",
+  "name": "notify-availability",
   "version": "0.7.0",
   "private": true,
   "scripts": {
@@ -13,7 +13,7 @@
     "@babel/core": "7.0.0",
     "babel-core": "7.0.0-bridge.0",
     "moment": "2.22.2",
-    "react": "16.3.2",
+    "react": "16.3.1",
     "react-native": "0.55.4",
     "react-native-background-fetch": "2.4.3",
     "react-native-background-task": "0.2.1",

@@ -26,7 +26,7 @@ import {
   WEB_PLATFORM_MOBILE,
   WEB_PLATFORM_TABLET,
 } from './Constants';
-import { styles } from './Styles';
+import styles from './Styles';
 
 
 PushNotification.configure({
