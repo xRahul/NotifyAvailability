@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@babel/core": "7.0.0-rc.2",
+    "@babel/core": "7.0.0",
     "babel-core": "7.0.0-bridge.0",
     "moment": "2.22.2",
     "react": "16.3.2",
