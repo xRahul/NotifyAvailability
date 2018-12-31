@@ -91,3 +91,6 @@ key/my-release-key.keystore
 android/app/my-release-key.keystore
 
 android/.gradle
+
+# vscode generated react files
+.vscode/.react
