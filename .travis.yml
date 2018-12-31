@@ -34,7 +34,9 @@ licenses:
   - android-sdk-license-.+
   - google-gdk-license-.+
 before_install:
-  - nvm install 6
+  - nvm ls-remote
+  - nvm list
+  - nvm install 8
   - node --version
   - travis_retry curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
   - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
@@ -43,9 +45,10 @@ before_install:
   - chmod +x ./android/gradlew
 install:
   - yarn install
+  - npm install -g react-native-cli
 script:
   - npm run ci
-  - cd android && ./gradlew clean
-after_script:
+  - cd android
+  - ./gradlew clean
   - ./gradlew assembleDebug
   - ./gradlew sonarqube
