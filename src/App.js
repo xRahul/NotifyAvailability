@@ -212,7 +212,7 @@ export default class App extends Component {
   }
 
 
-  async createPrefetchJobs() {
+  createPrefetchJobs = async () => {
     try {
       this.persistState('loading', true);
       this.persistState('url', this.state.url.trim());
@@ -235,7 +235,7 @@ export default class App extends Component {
   }
 
 
-  deletePrefetchJobs() {
+  deletePrefetchJobs = () => {
     try {
       BackgroundTask.cancel();
       this.persistState('taskSet', 'no');
@@ -351,12 +351,12 @@ export default class App extends Component {
         {this.state.taskSet === 'no' && <Button
           style={styles.checkingButton}
           title="Start Checking"
-          onPress={() => this.createPrefetchJobs}
+          onPress={this.createPrefetchJobs}
         /> }
         {this.state.taskSet === 'yes' && <Button
           style={styles.checkingButton}
           title="Stop Checking"
-          onPress={() => this.deletePrefetchJobs}
+          onPress={this.deletePrefetchJobs}
         /> }
 
         {this.state.loading && <ActivityIndicator size="large" color="#7a42f4" /> }
