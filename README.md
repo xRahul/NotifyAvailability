@@ -6,6 +6,7 @@
 [![GitHub license](https://img.shields.io/github/license/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/blob/master/License.txt)
 [![Build Status](https://travis-ci.org/xRahul/NotifyAvailability.svg?branch=master)](https://travis-ci.org/xRahul/NotifyAvailability)
 [![Releases](https://img.shields.io/github/release/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/releases/latest)
+[![libraries.io](https://img.shields.io/librariesio/github/xRahul/NotifyAvailability.svg)](https://libraries.io/github/xRahul/NotifyAvailability)
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e1399210d8914483a7d5ecde14665376)](https://www.codacy.com/app/xRahul/NotifyAvailability)
 [![Codeclimate Maintainability](https://api.codeclimate.com/v1/badges/5ff836f879789d82ce9b/maintainability)](https://codeclimate.com/github/xRahul/NotifyAvailability/maintainability)
