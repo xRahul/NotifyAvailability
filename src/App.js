@@ -345,23 +345,28 @@ export default class App extends Component {
         </View>
 
         <Text style={styles.lastCheckedText}>
-          Last Checked: {this.state.lastChecked === '0' ? 'Never' : moment(parseFloat(this.state.lastChecked)).fromNow()}
+          Last Checked:
+          {this.state.lastChecked === '0' ? 'Never' : moment(parseFloat(this.state.lastChecked)).fromNow()}
         </Text>
 
-        {this.state.taskSet === 'no' && <Button
-          style={styles.checkingButton}
-          title="Start Checking"
-          onPress={this.createPrefetchJobs}
-        /> }
-        {this.state.taskSet === 'yes' && <Button
-          style={styles.checkingButton}
-          title="Stop Checking"
-          onPress={this.deletePrefetchJobs}
-        /> }
+        {this.state.taskSet === 'no' && (
+          <Button
+            style={styles.checkingButton}
+            title="Start Checking"
+            onPress={this.createPrefetchJobs}
+          />
+        ) }
+        {this.state.taskSet === 'yes' && (
+          <Button
+            style={styles.checkingButton}
+            title="Stop Checking"
+            onPress={this.deletePrefetchJobs}
+          />
+        ) }
 
         {this.state.loading && <ActivityIndicator size="large" color="#7a42f4" /> }
 
-        {this.state.taskSet === 'yes' && this.state.url !== '' &&
+        {this.state.taskSet === 'yes' && this.state.url !== '' && (
           <WebView
             style={styles.webview}
             source={{ uri: this.state.url }}
@@ -369,7 +374,7 @@ export default class App extends Component {
             scalesPageToFit={false}
             {...webViewProps}
           />
-        }
+        ) }
 
       </ScrollView>
     );
