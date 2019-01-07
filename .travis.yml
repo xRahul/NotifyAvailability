@@ -47,7 +47,7 @@ install:
   - yarn install
   - npm install -g react-native-cli
 script:
-  - npm run ci
+  - yarn ci
   - cd android
   - ./gradlew clean
   - ./gradlew assembleDebug
