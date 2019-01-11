@@ -6312,10 +6312,10 @@ react-is@^16.3.2:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.3.2.tgz#f4d3d0e2f5fbb6ac46450641eb2e25bf05d36b22"
   integrity sha512-ybEM7YOr4yBgFd6w8dJqwxegqZGJNBZl6U27HnGKuTZmDvVrD5quWOK/wAnMywiZzW+Qsk+l4X2c70+thp/A8Q==
 
-react-native-background-fetch@2.4.3:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-background-fetch/-/react-native-background-fetch-2.4.3.tgz#4621cca2a8f9e96edbf0556afcd04873bd698f37"
-  integrity sha512-KahQOrRcNsBdhGSQuFI31sWa11LMlnnz0QlDRr8nY49AuPe2jsTthcxzYNpRkmZRTK8yZAM8HZeiRu9lWDhuIw==
+react-native-background-fetch@2.4.6:
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/react-native-background-fetch/-/react-native-background-fetch-2.4.6.tgz#86eef69f00f1acefd4107e658d35e7b2df4055ce"
+  integrity sha512-u0NH6liYRoohJqP8zFTj87ODK61D7ibl8q+lUFcc5WxPawC8C1DDrb82txtkbvyPNHch7hX2OYz5FAGaahvnDg==
   dependencies:
     fast-plist "^0.1.2"
     plist "^2.0.1"
