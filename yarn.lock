@@ -2186,10 +2186,10 @@ babel-plugin-transform-strict-mode@^6.24.1:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
 
-babel-preset-airbnb@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-airbnb/-/babel-preset-airbnb-3.2.0.tgz#9d334a32bfd3aedcbeb812cb9d0478cc23973469"
-  integrity sha512-/0FNYjTpJtkqrdF8cyb7T5XQedje8nl+GB4vS+TvI2kjMX33EyyZA+0RBMrKSNwAaSdLurhQEF/JWDBRTAqrrA==
+babel-preset-airbnb@3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/babel-preset-airbnb/-/babel-preset-airbnb-3.3.2.tgz#83075bc6cb8232d7dcc2dacfe17a9b7dcf3773ce"
+  integrity sha512-PByDbITpJTkDq2AYhjh84jm7ccAPdFxGP7NC77uepVh5QFkz8VDPrMhZZKohWTBAwN0jBmzqGFPSUsEdq+2Kig==
   dependencies:
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
@@ -6299,18 +6299,6 @@ pify@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
   integrity sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=
-
-pinkie-promise@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/pinkie-promise/-/pinkie-promise-2.0.1.tgz#2135d6dfa7a358c069ac9b178776288228450ffa"
-  integrity sha1-ITXW36ejWMBprJsXh3YogihFD/o=
-  dependencies:
-    pinkie "^2.0.0"
-
-pinkie@^2.0.0:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
-  integrity sha1-clVrgM+g1IqXToDnckjoDtT3+HA=
 
 pirates@^3.0.1:
   version "3.0.2"
