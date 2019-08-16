@@ -15,7 +15,7 @@
     "moment": "2.24.0",
     "react": "16.3.1",
     "react-native": "0.55.4",
-    "react-native-background-fetch": "2.4.6",
+    "react-native-background-fetch": "2.7.0",
     "react-native-background-task": "0.2.1",
     "react-native-push-notification": "3.0.2"
   },
