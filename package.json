@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@babel/core": "7.4.5",
+    "@babel/core": "7.6.2",
     "babel-core": "7.0.0-bridge.0",
     "moment": "2.24.0",
     "react": "16.3.1",
@@ -20,7 +20,7 @@
     "react-native-push-notification": "3.0.2"
   },
   "devDependencies": {
-    "babel-eslint": "10.0.1",
+    "babel-eslint": "10.0.3",
     "babel-jest": "24.0.0",
     "babel-preset-airbnb": "3.2.0",
     "babel-preset-react-native": "4.0.1",
