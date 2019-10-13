@@ -63,4 +63,3 @@ buck-out/
 android/keystores/debug.keystore
 key/my-release-key.keystore
 android/app/my-release-key.keystore
-android/app/debug.keystore
