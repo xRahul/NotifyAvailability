@@ -1,9 +1,3 @@
 rootProject.name = 'NotifyAvailability'
-include ':react-native-background-fetch'
-project(':react-native-background-fetch').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-background-fetch/android')
-include ':react-native-push-notification'
-project(':react-native-push-notification').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-push-notification/android')
-include ':react-native-background-task'
-project(':react-native-background-task').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-background-task/android')
-
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
