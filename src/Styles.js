@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -15,8 +15,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  pickerText: {
-  },
+  pickerText: {},
   pickerPicker: {
     flex: 1,
   },
@@ -24,8 +23,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  switchText: {
-  },
+  switchText: {},
   switchSwitch: {
     flex: 1,
   },
@@ -33,9 +31,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: 'center',
   },
-  checkingButton: {
-
-  },
+  checkingButton: {},
 });
 
 export default styles;
