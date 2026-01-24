@@ -23,12 +23,18 @@ jest.mock('@react-native-community/async-storage', () => ({
 }));
 
 jest.mock('react-native-webview', () => {
-  const React = require('react');
-  const {View} = require('react-native');
   return {
-    WebView: props => <View {...props} />,
+    WebView: () => null,
   };
 });
+
+jest.mock('../src/services/BackgroundService', () => ({
+  checkUrlForText: jest.fn(),
+  background_task: jest.fn(),
+}));
+
+jest.mock('react-native/Libraries/Components/Switch/Switch', () => 'Switch');
+jest.mock('react-native/Libraries/Components/Picker/Picker', () => 'Picker');
 
 it('renders correctly', () => {
   const tree = renderer.create(<App />).toJSON();

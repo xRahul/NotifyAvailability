@@ -35,9 +35,6 @@
     "preset": "react-native",
     "transformIgnorePatterns": [
       "node_modules/(?!(react-native|@react-native|@react-native-community|react-native-background-timer|react-native-push-notification|react-native-webview)/)"
-    ],
-    "moduleNameMapper": {
-      "^react-native$": "<rootDir>/node_modules/react-native"
-    }
+    ]
   }
 }

@@ -5,11 +5,7 @@ import {
   ScrollView,
   Button,
   ActivityIndicator,
-  TextInput,
-  Picker,
   PushNotificationIOS,
-  View,
-  Switch,
 } from 'react-native';
 
 import {WebView} from 'react-native-webview';
@@ -22,9 +18,13 @@ import {
   USER_AGENT_DESKTOP,
   WEB_PLATFORM_DESKTOP,
   WEB_PLATFORM_MOBILE,
-  WEB_PLATFORM_TABLET,
 } from './Constants';
 import styles from './Styles';
+import {checkUrlForText, background_task} from './services/BackgroundService';
+import UrlInput from './components/UrlInput';
+import SearchInput from './components/SearchInput';
+import SettingsSwitch from './components/SettingsSwitch';
+import PlatformPicker from './components/PlatformPicker';
 
 PushNotification.configure({
   // (required) Called when a remote or local notification is opened or received
@@ -44,99 +44,6 @@ PushNotification.configure({
   popInitialNotification: true,
   requestPermissions: true,
 });
-
-const checkUrlForText = async checkUrlForTextData => {
-  const {
-    url,
-    searchText,
-    webPlatformType,
-    caseSensitiveSearch,
-    searchAbsense,
-  } = checkUrlForTextData;
-
-  // eslint-disable-next-line no-undef
-  const headers = new Headers();
-  let textFound;
-  let showNotification;
-  let notificationText;
-
-  if (!url || !searchText) {
-    BackgroundTimer.stopBackgroundTimer();
-    return;
-  }
-
-  if (webPlatformType === WEB_PLATFORM_DESKTOP) {
-    headers.set('User-Agent', USER_AGENT_DESKTOP);
-  }
-
-  try {
-    const response = await fetch(url, {headers});
-    const htmlText = await response.text();
-
-    if (caseSensitiveSearch === 'yes') {
-      textFound = htmlText.includes(searchText);
-    } else {
-      textFound = htmlText.toLowerCase().includes(searchText.toLowerCase());
-    }
-
-    if (searchAbsense === 'yes') {
-      showNotification = !textFound;
-      notificationText = `${searchText} was not found on ${url}`;
-    } else {
-      showNotification = textFound;
-      notificationText = `${searchText} was found on ${url}`;
-    }
-
-    if (showNotification) {
-      PushNotification.localNotification({
-        message: notificationText,
-      });
-    }
-
-    await AsyncStorage.setItem(
-      'lastChecked',
-      moment()
-        .valueOf()
-        .toString(),
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const background_task = async () => {
-  try {
-    const values = await AsyncStorage.multiGet([
-      'url',
-      'searchText',
-      'webPlatformType',
-      'caseSensitiveSearch',
-      'searchAbsense',
-    ]);
-
-    const data = {};
-    values.forEach(([key, value]) => {
-      data[key] = value;
-    });
-
-    // Handle missing keys if necessary, but multiGet returns null for missing
-    // checkUrlForTextData needs specific keys.
-    // The keys from AsyncStorage match the keys needed for checkUrlForTextData object except they are not an object yet.
-
-    // Construct the object
-    const checkUrlForTextData = {
-      url: data.url,
-      searchText: data.searchText,
-      webPlatformType: data.webPlatformType,
-      caseSensitiveSearch: data.caseSensitiveSearch,
-      searchAbsense: data.searchAbsense,
-    };
-
-    await checkUrlForText(checkUrlForTextData);
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const App = () => {
   const [url, setUrl] = useState('');
@@ -278,12 +185,6 @@ const App = () => {
   const pickerValueChanged = itemValue => {
     setWebPlatformType(itemValue);
     persist('webPlatformType', itemValue);
-    // We need to trigger refresh logic.
-    // Since setting state is async, we can't rely on `webPlatformType` being updated immediately if we used it in refreshWebView (if it used state directly).
-    // But `refreshWebView` uses `url`. `webPlatformType` affects `webViewProps` in render.
-    // To force reload, we call refreshWebView.
-    // However, we want the reload to happen with the NEW `webPlatformType`.
-    // Since `refreshWebView` does `setUrl('')` then `setUrl(currentUrl)`, the re-render will pick up the new `webPlatformType`.
     refreshWebView();
   };
 
@@ -296,75 +197,46 @@ const App = () => {
     <ScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="always">
-      <TextInput
-        onChangeText={text => {
-          setUrl(text);
-          persist('url', text);
-        }}
-        value={url}
-        autoCorrect={false}
-        enablesReturnKeyAutomatically
-        keyboardType="url"
-        placeholder="Enter URL https://..."
-        returnKeyType="next"
-        blurOnSubmit={false}
+      <UrlInput
+        url={url}
+        setUrl={setUrl}
+        persist={persist}
         onSubmitEditing={() =>
           searchTextInputRef.current && searchTextInputRef.current.focus()
         }
       />
 
-      <TextInput
-        onChangeText={text => {
-          setSearchText(text);
-          persist('searchText', text);
-        }}
-        value={searchText}
-        autoCorrect={false}
-        enablesReturnKeyAutomatically
-        placeholder="Enter Search String"
+      <SearchInput
         ref={searchTextInputRef}
+        searchText={searchText}
+        setSearchText={setSearchText}
+        persist={persist}
       />
 
-      <View style={styles.switchOverView}>
-        <Text style={styles.switchText}>Case Sensitive Search: </Text>
-        <View style={styles.switchSwitch}>
-          <Switch
-            onValueChange={value => {
-              const valStr = value ? 'yes' : 'no';
-              setCaseSensitiveSearch(valStr);
-              persist('caseSensitiveSearch', valStr);
-            }}
-            value={caseSensitiveSearch === 'yes'}
-          />
-        </View>
-      </View>
+      <SettingsSwitch
+        label="Case Sensitive Search: "
+        value={caseSensitiveSearch === 'yes'}
+        onValueChange={value => {
+          const valStr = value ? 'yes' : 'no';
+          setCaseSensitiveSearch(valStr);
+          persist('caseSensitiveSearch', valStr);
+        }}
+      />
 
-      <View style={styles.switchOverView}>
-        <Text style={styles.switchText}>Search Absense of Text: </Text>
-        <View style={styles.switchSwitch}>
-          <Switch
-            onValueChange={value => {
-              const valStr = value ? 'yes' : 'no';
-              setSearchAbsense(valStr);
-              persist('searchAbsense', valStr);
-            }}
-            value={searchAbsense === 'yes'}
-          />
-        </View>
-      </View>
+      <SettingsSwitch
+        label="Search Absense of Text: "
+        value={searchAbsense === 'yes'}
+        onValueChange={value => {
+          const valStr = value ? 'yes' : 'no';
+          setSearchAbsense(valStr);
+          persist('searchAbsense', valStr);
+        }}
+      />
 
-      <View style={styles.pickerOverView}>
-        <Text style={styles.pickerText}>Webpage Type: </Text>
-        <View style={styles.pickerPicker}>
-          <Picker
-            selectedValue={webPlatformType}
-            onValueChange={itemValue => pickerValueChanged(itemValue)}>
-            <Picker.Item label="Mobile" value={WEB_PLATFORM_MOBILE} />
-            <Picker.Item label="Desktop" value={WEB_PLATFORM_DESKTOP} />
-            <Picker.Item label="Tablet" value={WEB_PLATFORM_TABLET} />
-          </Picker>
-        </View>
-      </View>
+      <PlatformPicker
+        selectedValue={webPlatformType}
+        onValueChange={pickerValueChanged}
+      />
 
       <Text style={styles.lastCheckedText}>
         Last Checked:
