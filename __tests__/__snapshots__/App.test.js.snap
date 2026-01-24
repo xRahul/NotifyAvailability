@@ -1,0 +1,222 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<RCTScrollView
+  contentContainerStyle={
+    Object {
+      "flex": 1,
+      "flexDirection": "column",
+      "justifyContent": "center",
+      "padding": 10,
+    }
+  }
+  keyboardShouldPersistTaps="always"
+>
+  <View>
+    <TextInput
+      allowFontScaling={true}
+      autoCorrect={false}
+      blurOnSubmit={false}
+      enablesReturnKeyAutomatically={true}
+      keyboardType="url"
+      onChangeText={[Function]}
+      onSubmitEditing={[Function]}
+      placeholder="Enter URL https://..."
+      rejectResponderTermination={true}
+      returnKeyType="next"
+      underlineColorAndroid="transparent"
+      value=""
+    />
+    <TextInput
+      allowFontScaling={true}
+      autoCorrect={false}
+      enablesReturnKeyAutomatically={true}
+      onChangeText={[Function]}
+      placeholder="Enter Search String"
+      rejectResponderTermination={true}
+      underlineColorAndroid="transparent"
+      value=""
+    />
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flexDirection": "row",
+        }
+      }
+    >
+      <Text
+        style={Object {}}
+      >
+        Case Sensitive Search:
+      </Text>
+      <View
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <RCTSwitch
+          accessibilityRole="button"
+          onChange={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "height": 31,
+              "width": 51,
+            }
+          }
+          value={true}
+        />
+      </View>
+    </View>
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flexDirection": "row",
+        }
+      }
+    >
+      <Text
+        style={Object {}}
+      >
+        Search Absense of Text:
+      </Text>
+      <View
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <RCTSwitch
+          accessibilityRole="button"
+          onChange={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "height": 31,
+              "width": 51,
+            }
+          }
+          value={false}
+        />
+      </View>
+    </View>
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flexDirection": "row",
+        }
+      }
+    >
+      <Text
+        style={Object {}}
+      >
+        Webpage Type:
+      </Text>
+      <View
+        style={
+          Object {
+            "flex": 1,
+          }
+        }
+      >
+        <View>
+          <RCTPicker
+            items={
+              Array [
+                Object {
+                  "label": "Mobile",
+                  "textColor": undefined,
+                  "value": "mobile",
+                },
+                Object {
+                  "label": "Desktop",
+                  "textColor": undefined,
+                  "value": "desktop",
+                },
+                Object {
+                  "label": "Tablet",
+                  "textColor": undefined,
+                  "value": "tablet",
+                },
+              ]
+            }
+            onChange={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            selectedIndex={0}
+            style={
+              Array [
+                Object {
+                  "height": 216,
+                },
+                undefined,
+              ]
+            }
+          />
+        </View>
+      </View>
+    </View>
+    <Text
+      style={
+        Object {
+          "marginBottom": 5,
+          "textAlign": "center",
+        }
+      }
+    >
+      Last Checked:
+      Never
+    </Text>
+    <View
+      accessibilityRole="button"
+      accessibilityStates={Array []}
+      accessible={true}
+      focusable={true}
+      isTVSelectable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "opacity": 1,
+        }
+      }
+    >
+      <View
+        style={
+          Array [
+            Object {},
+          ]
+        }
+      >
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#007AFF",
+                "fontSize": 18,
+                "padding": 8,
+                "textAlign": "center",
+              },
+            ]
+          }
+        >
+          Start Checking
+        </Text>
+      </View>
+    </View>
+  </View>
+</RCTScrollView>
+`;
