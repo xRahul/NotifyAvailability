@@ -214,7 +214,7 @@ const App = () => {
       />
 
       <SettingsSwitch
-        label="Case Sensitive Search: "
+        label="Case Sensitive Search:"
         value={caseSensitiveSearch === 'yes'}
         onValueChange={value => {
           const valStr = value ? 'yes' : 'no';
@@ -224,7 +224,7 @@ const App = () => {
       />
 
       <SettingsSwitch
-        label="Search Absense of Text: "
+        label="Search Absense of Text:"
         value={searchAbsense === 'yes'}
         onValueChange={value => {
           const valStr = value ? 'yes' : 'no';

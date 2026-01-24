@@ -10,7 +10,7 @@ import {
 const PlatformPicker = ({selectedValue, onValueChange}) => {
   return (
     <View style={styles.pickerOverView}>
-      <Text style={styles.pickerText}>Webpage Type: </Text>
+      <Text style={styles.pickerText}>Webpage Type:</Text>
       <View style={styles.pickerPicker}>
         <Picker selectedValue={selectedValue} onValueChange={onValueChange}>
           <Picker.Item label="Mobile" value={WEB_PLATFORM_MOBILE} />
