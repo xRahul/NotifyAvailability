@@ -1,15 +1,11 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   Platform,
   Text,
   ScrollView,
   Button,
   ActivityIndicator,
-  TextInput,
-  Picker,
   PushNotificationIOS,
-  View,
-  Switch,
 } from 'react-native';
 
 import {WebView} from 'react-native-webview';
@@ -22,9 +18,13 @@ import {
   USER_AGENT_DESKTOP,
   WEB_PLATFORM_DESKTOP,
   WEB_PLATFORM_MOBILE,
-  WEB_PLATFORM_TABLET,
 } from './Constants';
 import styles from './Styles';
+import {checkUrlForText, background_task} from './services/BackgroundService';
+import UrlInput from './components/UrlInput';
+import SearchInput from './components/SearchInput';
+import SettingsSwitch from './components/SettingsSwitch';
+import PlatformPicker from './components/PlatformPicker';
 
 PushNotification.configure({
   // (required) Called when a remote or local notification is opened or received
@@ -45,332 +45,234 @@ PushNotification.configure({
   requestPermissions: true,
 });
 
-const checkUrlForText = async checkUrlForTextData => {
-  const {
-    url,
-    searchText,
-    webPlatformType,
-    caseSensitiveSearch,
-    searchAbsense,
-  } = checkUrlForTextData;
+const App = () => {
+  const [url, setUrl] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [taskSet, setTaskSet] = useState('no');
+  const [loading, setLoading] = useState(false);
+  const [webPlatformType, setWebPlatformType] = useState(WEB_PLATFORM_MOBILE);
+  const [lastChecked, setLastChecked] = useState('0');
+  const [caseSensitiveSearch, setCaseSensitiveSearch] = useState('yes');
+  const [searchAbsense, setSearchAbsense] = useState('no');
 
-  // eslint-disable-next-line no-undef
-  const headers = new Headers();
-  let textFound;
-  let showNotification;
-  let notificationText;
+  const searchTextInputRef = useRef(null);
 
-  if (!url || !searchText) {
-    BackgroundTimer.stopBackgroundTimer();
-    return;
-  }
+  useEffect(() => {
+    const loadState = async () => {
+      try {
+        const keys = [
+          'url',
+          'searchText',
+          'taskSet',
+          'webPlatformType',
+          'lastChecked',
+          'caseSensitiveSearch',
+          'searchAbsense',
+        ];
+        const result = await AsyncStorage.multiGet(keys);
 
-  if (webPlatformType === WEB_PLATFORM_DESKTOP) {
-    headers.set('User-Agent', USER_AGENT_DESKTOP);
-  }
-
-  try {
-    const response = await fetch(url, {headers});
-    const htmlText = await response.text();
-
-    if (caseSensitiveSearch === 'yes') {
-      textFound = htmlText.includes(searchText);
-    } else {
-      textFound = htmlText.toLowerCase().includes(searchText.toLowerCase());
-    }
-
-    if (searchAbsense === 'yes') {
-      showNotification = !textFound;
-      notificationText = `${searchText} was not found on ${url}`;
-    } else {
-      showNotification = textFound;
-      notificationText = `${searchText} was found on ${url}`;
-    }
-
-    if (showNotification) {
-      PushNotification.localNotification({
-        message: notificationText,
-      });
-    }
-
-    await AsyncStorage.setItem(
-      'lastChecked',
-      moment()
-        .valueOf()
-        .toString(),
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const background_task = async () => {
-  try {
-    const urlBackgroundTask = await AsyncStorage.getItem('url');
-    const searchTextBackgroundTask = await AsyncStorage.getItem('searchText');
-    const webPlatformTypeBackgroundTask = await AsyncStorage.getItem(
-      'webPlatformType',
-    );
-    const caseSensitiveSearchBackgroundTask = await AsyncStorage.getItem(
-      'caseSensitiveSearch',
-    );
-    const searchAbsenseBackgroundTask = await AsyncStorage.getItem(
-      'searchAbsense',
-    );
-
-    const checkUrlForTextData = {
-      url: urlBackgroundTask,
-      searchText: searchTextBackgroundTask,
-      webPlatformType: webPlatformTypeBackgroundTask,
-      caseSensitiveSearch: caseSensitiveSearchBackgroundTask,
-      searchAbsense: searchAbsenseBackgroundTask,
-    };
-
-    await checkUrlForText(checkUrlForTextData);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      url: '',
-      searchText: '',
-      taskSet: 'no',
-      loading: false,
-      webPlatformType: WEB_PLATFORM_MOBILE,
-      lastChecked: '0',
-      caseSensitiveSearch: 'yes',
-      searchAbsense: 'no',
-    };
-
-    this.initAsyncStorage();
-  }
-
-  shouldUseAsyncStorage(stateKey) {
-    if (typeof this.state[stateKey] !== 'boolean' && stateKey !== 'loading') {
-      return true;
-    }
-    return false;
-  }
-
-  async initAsyncStorage() {
-    Object.keys(this.state).forEach(async stateKey => {
-      if (
-        Object.prototype.hasOwnProperty.call(this.state, stateKey) &&
-        this.shouldUseAsyncStorage(stateKey)
-      ) {
-        try {
-          const value = await AsyncStorage.getItem(stateKey);
-
-          if (value) {
-            this.persistState(stateKey, value);
+        result.forEach(([key, value]) => {
+          if (value !== null) {
+            switch (key) {
+              case 'url':
+                setUrl(value);
+                break;
+              case 'searchText':
+                setSearchText(value);
+                break;
+              case 'taskSet':
+                setTaskSet(value);
+                if (value === 'yes') {
+                  BackgroundTimer.stopBackgroundTimer();
+                  BackgroundTimer.runBackgroundTimer(
+                    background_task,
+                    1000 * 60 * 15,
+                  );
+                } else {
+                  BackgroundTimer.stopBackgroundTimer();
+                }
+                break;
+              case 'webPlatformType':
+                setWebPlatformType(value);
+                break;
+              case 'lastChecked':
+                setLastChecked(value);
+                break;
+              case 'caseSensitiveSearch':
+                setCaseSensitiveSearch(value);
+                break;
+              case 'searchAbsense':
+                setSearchAbsense(value);
+                break;
+            }
           }
-        } catch (error) {
-          console.log(error);
-        }
+        });
+      } catch (error) {
+        console.log(error);
       }
-    });
-  }
+    };
+    loadState();
+  }, []);
 
-  componentDidMount() {
-    if (this.state.taskSet === 'yes') {
-      // Schedule the task to run every ~15 min if app is closed.
-      BackgroundTimer.stopBackgroundTimer();
-      BackgroundTimer.runBackgroundTimer(background_task, 1000 * 60 * 15);
-    } else {
-      BackgroundTimer.stopBackgroundTimer();
-    }
-  }
-
-  persistState(key, value) {
-    const obj = {};
-    obj[key] = value;
-    this.setState(obj);
-
-    if (this.shouldUseAsyncStorage(key)) {
-      AsyncStorage.setItem(key, value);
-    }
-
-    return Promise.resolve();
-  }
-
-  createPrefetchJobs = async () => {
+  const persist = async (key, value) => {
     try {
-      this.persistState('loading', true);
-      this.persistState('url', this.state.url.trim());
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createPrefetchJobs = async () => {
+    try {
+      setLoading(true);
+      const trimmedUrl = url.trim();
+      setUrl(trimmedUrl);
+      persist('url', trimmedUrl);
 
       BackgroundTimer.stopBackgroundTimer();
       BackgroundTimer.runBackgroundTimer(background_task, 1000 * 60 * 15);
 
-      this.persistState('taskSet', 'yes');
+      setTaskSet('yes');
+      persist('taskSet', 'yes');
 
-      await checkUrlForText(this.state);
+      const checkUrlForTextData = {
+        url: trimmedUrl,
+        searchText,
+        webPlatformType,
+        caseSensitiveSearch,
+        searchAbsense,
+      };
 
-      this.persistState(
-        'lastChecked',
-        moment()
-          .valueOf()
-          .toString(),
-      );
+      await checkUrlForText(checkUrlForTextData);
+
+      const now = moment()
+        .valueOf()
+        .toString();
+      setLastChecked(now);
+      persist('lastChecked', now);
     } catch (error) {
       console.log(error);
       BackgroundTimer.stopBackgroundTimer();
-      this.persistState('taskSet', 'no');
+      setTaskSet('no');
+      persist('taskSet', 'no');
     } finally {
-      this.persistState('loading', false);
+      setLoading(false);
     }
   };
 
-  deletePrefetchJobs = () => {
+  const deletePrefetchJobs = () => {
     try {
       BackgroundTimer.stopBackgroundTimer();
-      this.persistState('taskSet', 'no');
+      setTaskSet('no');
+      persist('taskSet', 'no');
     } catch (error) {
       console.log(error);
     }
   };
 
-  pickerValueChanged(newIndex, newValue) {
-    this.persistState('webPlatformType', newValue);
-    this.refreshWebView();
+  const refreshWebView = () => {
+    setLoading(true);
+    // Temporarily clear URL to force reload
+    const currentUrl = url;
+    setUrl('');
+    // Use timeout to allow render cycle to clear WebView
+    setTimeout(() => {
+      setUrl(currentUrl);
+      setLoading(false);
+    }, 50);
+  };
+
+  const pickerValueChanged = itemValue => {
+    setWebPlatformType(itemValue);
+    persist('webPlatformType', itemValue);
+    refreshWebView();
+  };
+
+  const webViewProps = {};
+  if (webPlatformType === WEB_PLATFORM_DESKTOP) {
+    webViewProps.userAgent = USER_AGENT_DESKTOP;
   }
 
-  async refreshWebView() {
-    try {
-      this.persistState('loading', true);
-      const {url} = this.state;
-      await this.persistState('url', '');
-      await this.persistState('url', url);
-      this.persistState('loading', false);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  return (
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="always">
+      <UrlInput
+        url={url}
+        setUrl={setUrl}
+        persist={persist}
+        onSubmitEditing={() =>
+          searchTextInputRef.current && searchTextInputRef.current.focus()
+        }
+      />
 
-  switchValueChanged(switchName, newValue) {
-    if (newValue) {
-      this.persistState(switchName, 'yes');
-    } else {
-      this.persistState(switchName, 'no');
-    }
-  }
+      <SearchInput
+        ref={searchTextInputRef}
+        searchText={searchText}
+        setSearchText={setSearchText}
+        persist={persist}
+      />
 
-  render() {
-    console.log(this.state);
+      <SettingsSwitch
+        label="Case Sensitive Search:"
+        value={caseSensitiveSearch === 'yes'}
+        onValueChange={value => {
+          const valStr = value ? 'yes' : 'no';
+          setCaseSensitiveSearch(valStr);
+          persist('caseSensitiveSearch', valStr);
+        }}
+      />
 
-    const webViewProps = {};
-    if (this.state.webPlatformType === WEB_PLATFORM_DESKTOP) {
-      webViewProps.userAgent = USER_AGENT_DESKTOP;
-    }
+      <SettingsSwitch
+        label="Search Absense of Text:"
+        value={searchAbsense === 'yes'}
+        onValueChange={value => {
+          const valStr = value ? 'yes' : 'no';
+          setSearchAbsense(valStr);
+          persist('searchAbsense', valStr);
+        }}
+      />
 
-    return (
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="always">
-        <TextInput
-          onChangeText={url => this.persistState('url', url)}
-          value={this.state.url}
-          autoCorrect={false}
-          enablesReturnKeyAutomatically
-          keyboardType="url"
-          placeholder="Enter URL https://..."
-          returnKeyType="next"
-          blurOnSubmit={false}
-          onSubmitEditing={() => this.searchTextInput.focus()}
+      <PlatformPicker
+        selectedValue={webPlatformType}
+        onValueChange={pickerValueChanged}
+      />
+
+      <Text style={styles.lastCheckedText}>
+        Last Checked:
+        {lastChecked === '0'
+          ? 'Never'
+          : moment(parseFloat(lastChecked)).fromNow()}
+      </Text>
+
+      {taskSet === 'no' && (
+        <Button
+          style={styles.checkingButton}
+          title="Start Checking"
+          onPress={createPrefetchJobs}
         />
-
-        <TextInput
-          onChangeText={searchText =>
-            this.persistState('searchText', searchText)
-          }
-          value={this.state.searchText}
-          autoCorrect={false}
-          enablesReturnKeyAutomatically
-          placeholder="Enter Search String"
-          ref={input => {
-            this.searchTextInput = input;
-          }}
+      )}
+      {taskSet === 'yes' && (
+        <Button
+          style={styles.checkingButton}
+          title="Stop Checking"
+          onPress={deletePrefetchJobs}
         />
+      )}
 
-        <View style={styles.switchOverView}>
-          <Text style={styles.switchText}>Case Sensitive Search: </Text>
-          <View style={styles.switchSwitch}>
-            <Switch
-              onValueChange={value =>
-                this.switchValueChanged('caseSensitiveSearch', value)
-              }
-              value={this.state.caseSensitiveSearch === 'yes'}
-            />
-          </View>
-        </View>
+      {loading && <ActivityIndicator size="large" color="#7a42f4" />}
 
-        <View style={styles.switchOverView}>
-          <Text style={styles.switchText}>Search Absense of Text: </Text>
-          <View style={styles.switchSwitch}>
-            <Switch
-              onValueChange={value =>
-                this.switchValueChanged('searchAbsense', value)
-              }
-              value={this.state.searchAbsense === 'yes'}
-            />
-          </View>
-        </View>
+      {taskSet === 'yes' && url !== '' && (
+        <WebView
+          style={styles.webview}
+          source={{uri: url}}
+          dataDetectorTypes="all"
+          scalesPageToFit={false}
+          {...webViewProps}
+        />
+      )}
+    </ScrollView>
+  );
+};
 
-        <View style={styles.pickerOverView}>
-          <Text style={styles.pickerText}>Webpage Type: </Text>
-          <View style={styles.pickerPicker}>
-            <Picker
-              selectedValue={this.state.webPlatformType}
-              onValueChange={(itemValue, itemIndex) =>
-                this.pickerValueChanged(itemIndex, itemValue)
-              }>
-              <Picker.Item label="Mobile" value={WEB_PLATFORM_MOBILE} />
-              <Picker.Item label="Desktop" value={WEB_PLATFORM_DESKTOP} />
-              <Picker.Item label="Tablet" value={WEB_PLATFORM_TABLET} />
-            </Picker>
-          </View>
-        </View>
-
-        <Text style={styles.lastCheckedText}>
-          Last Checked:
-          {this.state.lastChecked === '0'
-            ? 'Never'
-            : moment(parseFloat(this.state.lastChecked)).fromNow()}
-        </Text>
-
-        {this.state.taskSet === 'no' && (
-          <Button
-            style={styles.checkingButton}
-            title="Start Checking"
-            onPress={this.createPrefetchJobs}
-          />
-        )}
-        {this.state.taskSet === 'yes' && (
-          <Button
-            style={styles.checkingButton}
-            title="Stop Checking"
-            onPress={this.deletePrefetchJobs}
-          />
-        )}
-
-        {this.state.loading && (
-          <ActivityIndicator size="large" color="#7a42f4" />
-        )}
-
-        {this.state.taskSet === 'yes' && this.state.url !== '' && (
-          <WebView
-            style={styles.webview}
-            source={{uri: this.state.url}}
-            dataDetectorTypes="all"
-            scalesPageToFit={false}
-            {...webViewProps}
-          />
-        )}
-      </ScrollView>
-    );
-  }
-}
+export default App;

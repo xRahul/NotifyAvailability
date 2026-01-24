@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<ScrollView
+  contentContainerStyle={
+    Object {
+      "flex": 1,
+      "flexDirection": "column",
+      "justifyContent": "center",
+      "padding": 10,
+    }
+  }
+  keyboardShouldPersistTaps="always"
+>
+  <TextInput
+    autoCorrect={false}
+    blurOnSubmit={false}
+    enablesReturnKeyAutomatically={true}
+    keyboardType="url"
+    onChangeText={[Function]}
+    onSubmitEditing={[Function]}
+    placeholder="Enter URL https://..."
+    returnKeyType="next"
+    value=""
+  />
+  <TextInput
+    autoCorrect={false}
+    enablesReturnKeyAutomatically={true}
+    onChangeText={[Function]}
+    placeholder="Enter Search String"
+    value=""
+  />
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+      }
+    }
+  >
+    <Text
+      style={Object {}}
+    >
+      Case Sensitive Search:
+    </Text>
+    <View
+      style={
+        Object {
+          "flex": 1,
+        }
+      }
+    >
+      <Switch
+        onValueChange={[Function]}
+        value={true}
+      />
+    </View>
+  </View>
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+      }
+    }
+  >
+    <Text
+      style={Object {}}
+    >
+      Search Absense of Text:
+    </Text>
+    <View
+      style={
+        Object {
+          "flex": 1,
+        }
+      }
+    >
+      <Switch
+        onValueChange={[Function]}
+        value={false}
+      />
+    </View>
+  </View>
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+      }
+    }
+  >
+    <Text
+      style={Object {}}
+    >
+      Webpage Type:
+    </Text>
+    <View
+      style={
+        Object {
+          "flex": 1,
+        }
+      }
+    >
+      <Picker
+        onValueChange={[Function]}
+        selectedValue="mobile"
+      >
+        <Picker.Item
+          label="Mobile"
+          value="mobile"
+        />
+        <Picker.Item
+          label="Desktop"
+          value="desktop"
+        />
+        <Picker.Item
+          label="Tablet"
+          value="tablet"
+        />
+      </Picker>
+    </View>
+  </View>
+  <Text
+    style={
+      Object {
+        "marginBottom": 5,
+        "textAlign": "center",
+      }
+    }
+  >
+    Last Checked:
+    Never
+  </Text>
+  <Button
+    onPress={[Function]}
+    style={Object {}}
+    title="Start Checking"
+  />
+</ScrollView>
+`;
