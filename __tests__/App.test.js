@@ -40,7 +40,9 @@ jest.mock('react-native', () => {
   const Text = props => React.createElement('Text', props, props.children);
   const ScrollView = props =>
     React.createElement('ScrollView', props, props.children);
-  const TextInput = props => React.createElement('TextInput', props);
+  const TextInput = React.forwardRef((props, ref) =>
+    React.createElement('TextInput', {...props, ref}),
+  );
   const Switch = props => React.createElement('Switch', props);
   const Button = props => React.createElement('Button', props);
   const ActivityIndicator = props =>

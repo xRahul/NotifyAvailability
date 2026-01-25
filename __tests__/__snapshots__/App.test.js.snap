@@ -67,7 +67,7 @@ exports[`renders correctly 1`] = `
     <Text
       style={Object {}}
     >
-      Search Absense of Text:
+      Search Absence of Text:
     </Text>
     <View
       style={

@@ -53,7 +53,7 @@ const App = () => {
   const [webPlatformType, setWebPlatformType] = useState(WEB_PLATFORM_MOBILE);
   const [lastChecked, setLastChecked] = useState('0');
   const [caseSensitiveSearch, setCaseSensitiveSearch] = useState('yes');
-  const [searchAbsense, setSearchAbsense] = useState('no');
+  const [searchAbsence, setSearchAbsence] = useState('no');
 
   const searchTextInputRef = useRef(null);
 
@@ -67,7 +67,7 @@ const App = () => {
           'webPlatformType',
           'lastChecked',
           'caseSensitiveSearch',
-          'searchAbsense',
+          'searchAbsence',
         ];
         const result = await AsyncStorage.multiGet(keys);
 
@@ -101,8 +101,8 @@ const App = () => {
               case 'caseSensitiveSearch':
                 setCaseSensitiveSearch(value);
                 break;
-              case 'searchAbsense':
-                setSearchAbsense(value);
+              case 'searchAbsence':
+                setSearchAbsence(value);
                 break;
             }
           }
@@ -140,7 +140,7 @@ const App = () => {
         searchText,
         webPlatformType,
         caseSensitiveSearch,
-        searchAbsense,
+        searchAbsence,
       };
 
       await checkUrlForText(checkUrlForTextData);
@@ -224,12 +224,12 @@ const App = () => {
       />
 
       <SettingsSwitch
-        label="Search Absense of Text:"
-        value={searchAbsense === 'yes'}
+        label="Search Absence of Text:"
+        value={searchAbsence === 'yes'}
         onValueChange={value => {
           const valStr = value ? 'yes' : 'no';
-          setSearchAbsense(valStr);
-          persist('searchAbsense', valStr);
+          setSearchAbsence(valStr);
+          persist('searchAbsence', valStr);
         }}
       />
 

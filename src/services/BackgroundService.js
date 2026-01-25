@@ -10,7 +10,7 @@ export const checkUrlForText = async checkUrlForTextData => {
     searchText,
     webPlatformType,
     caseSensitiveSearch,
-    searchAbsense,
+    searchAbsence,
   } = checkUrlForTextData;
 
   // eslint-disable-next-line no-undef
@@ -38,7 +38,7 @@ export const checkUrlForText = async checkUrlForTextData => {
       textFound = htmlText.toLowerCase().includes(searchText.toLowerCase());
     }
 
-    if (searchAbsense === 'yes') {
+    if (searchAbsence === 'yes') {
       showNotification = !textFound;
       notificationText = `${searchText} was not found on ${url}`;
     } else {
@@ -70,7 +70,7 @@ export const background_task = async () => {
       'searchText',
       'webPlatformType',
       'caseSensitiveSearch',
-      'searchAbsense',
+      'searchAbsence',
     ]);
 
     const data = {};
@@ -83,7 +83,7 @@ export const background_task = async () => {
       searchText: data.searchText,
       webPlatformType: data.webPlatformType,
       caseSensitiveSearch: data.caseSensitiveSearch,
-      searchAbsense: data.searchAbsense,
+      searchAbsence: data.searchAbsence,
     };
 
     await checkUrlForText(checkUrlForTextData);
