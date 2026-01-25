@@ -5,6 +5,8 @@
 *   **Type:** React Native (Android)
 *   **RN Version:** 0.61.2
 *   **Build System:** Gradle (Android)
+*   **Gradle Plugin:** 3.5.4
+*   **Gradle Wrapper:** 5.6.4
 
 ## Key Locations
 *   **Root:** Project root (contains `package.json`, `.github/`).
