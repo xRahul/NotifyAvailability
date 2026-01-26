@@ -1,0 +1,88 @@
+name: Release Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEY_STORE_BASE64 }}" | base64 -d > android/app/app-release.jks
+
+      - name: Build Release APK
+        run: |
+          cd android
+          ./gradlew assembleRelease \
+            -PMYAPP_RELEASE_STORE_FILE=app-release.jks \
+            -PMYAPP_RELEASE_STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }} \
+            -PMYAPP_RELEASE_KEY_ALIAS=${{ secrets.KEY_ALIAS }} \
+            -PMYAPP_RELEASE_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
+      - name: Calculate Next Version
+        id: version
+        run: |
+          git fetch --tags
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            NEW_TAG="v1.0.0"
+          else
+            # Remove 'v' prefix if present
+            VERSION=${LATEST_TAG#v}
+            IFS='.' read -r -a PARTS <<< "$VERSION"
+            # Handle cases where tag might not be semver (fallback to 1.0.0 or just increment last part)
+            if [ ${#PARTS[@]} -eq 3 ]; then
+               MAJOR=${PARTS[0]}
+               MINOR=${PARTS[1]}
+               PATCH=${PARTS[2]}
+               NEW_PATCH=$((PATCH + 1))
+               NEW_TAG="v$MAJOR.$MINOR.$NEW_PATCH"
+            else
+               echo "Warning: Last tag $LATEST_TAG format unknown. Defaulting to v1.0.0"
+               NEW_TAG="v1.0.0"
+            fi
+          fi
+          echo "Determined new version: $NEW_TAG"
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.NEW_TAG }}
+          name: Release ${{ env.NEW_TAG }}
+          draft: false
+          prerelease: false
+          files: |
+            android/app/build/outputs/apk/release/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

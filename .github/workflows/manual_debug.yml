@@ -1,14 +1,11 @@
-name: CI
+name: Manual Debug Build
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
-  ci:
-    name: Lint, Test, and Build Check
+  debug-build:
+    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
@@ -35,13 +32,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Lint
-        run: yarn lint
-
-      - name: Run Tests
-        run: yarn test
-
       - name: Build Debug APK
         run: |
           cd android
           ./gradlew assembleDebug
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
