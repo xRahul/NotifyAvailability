@@ -6,7 +6,9 @@ const UrlInput = ({url, setUrl, persist, onSubmitEditing}) => {
     <TextInput
       onChangeText={text => {
         setUrl(text);
-        persist('url', text);
+      }}
+      onEndEditing={e => {
+        persist('url', e.nativeEvent.text);
       }}
       value={url}
       autoCorrect={false}
