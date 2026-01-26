@@ -18,6 +18,7 @@ exports[`renders correctly 1`] = `
     enablesReturnKeyAutomatically={true}
     keyboardType="url"
     onChangeText={[Function]}
+    onEndEditing={[Function]}
     onSubmitEditing={[Function]}
     placeholder="Enter URL https://..."
     returnKeyType="next"
