@@ -1,6 +1,7 @@
 import React from 'react';
 import App from '../src/App';
 import renderer from 'react-test-renderer';
+import AsyncStorage from '@react-native-community/async-storage';
 
 // Mock dependencies
 jest.mock('react-native-background-timer', () => ({
@@ -15,6 +16,7 @@ jest.mock('react-native-push-notification', () => ({
 
 jest.mock('@react-native-community/async-storage', () => ({
   setItem: jest.fn(() => Promise.resolve()),
+  multiSet: jest.fn(() => Promise.resolve()),
   getItem: jest.fn(() => Promise.resolve(null)),
   getAllKeys: jest.fn(() => Promise.resolve([])),
   multiGet: jest.fn(() => Promise.resolve([])),
@@ -87,4 +89,18 @@ jest.mock('react-native', () => {
 it('renders correctly', () => {
   const tree = renderer.create(<App />).toJSON();
   expect(tree).toMatchSnapshot();
+});
+
+it('uses multiSet for performance when starting check', () => {
+  const component = renderer.create(<App />);
+  const root = component.root;
+
+  // Find the "Start Checking" button by its title prop
+  const button = root.find(node => node.props.title === 'Start Checking');
+
+  // Trigger the press
+  button.props.onPress();
+
+  // Verify that multiSet was called
+  expect(AsyncStorage.multiSet).toHaveBeenCalled();
 });
