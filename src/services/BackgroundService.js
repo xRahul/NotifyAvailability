@@ -3,6 +3,7 @@ import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
 import moment from 'moment';
 import {USER_AGENT_DESKTOP, WEB_PLATFORM_DESKTOP} from '../Constants';
+import {escapeRegExp} from '../Utils';
 
 export const checkUrlForText = async checkUrlForTextData => {
   const {
@@ -35,7 +36,9 @@ export const checkUrlForText = async checkUrlForTextData => {
     if (caseSensitiveSearch === 'yes') {
       textFound = htmlText.includes(searchText);
     } else {
-      textFound = htmlText.toLowerCase().includes(searchText.toLowerCase());
+      const escapedSearchText = escapeRegExp(searchText);
+      const regex = new RegExp(escapedSearchText, 'i');
+      textFound = regex.test(htmlText);
     }
 
     if (searchAbsence === 'yes') {
