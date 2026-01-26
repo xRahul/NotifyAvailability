@@ -6,7 +6,9 @@ const SearchInput = forwardRef(({searchText, setSearchText, persist}, ref) => {
     <TextInput
       onChangeText={text => {
         setSearchText(text);
-        persist('searchText', text);
+      }}
+      onEndEditing={e => {
+        persist('searchText', e.nativeEvent.text);
       }}
       value={searchText}
       autoCorrect={false}
