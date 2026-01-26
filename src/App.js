@@ -127,13 +127,14 @@ const App = () => {
       setLoading(true);
       const trimmedUrl = url.trim();
       setUrl(trimmedUrl);
-      persist('url', trimmedUrl);
 
       BackgroundTimer.stopBackgroundTimer();
       BackgroundTimer.runBackgroundTimer(background_task, 1000 * 60 * 15);
 
       setTaskSet('yes');
-      persist('taskSet', 'yes');
+      AsyncStorage.multiSet([['url', trimmedUrl], ['taskSet', 'yes']]).catch(
+        error => console.log(error),
+      );
 
       const checkUrlForTextData = {
         url: trimmedUrl,
