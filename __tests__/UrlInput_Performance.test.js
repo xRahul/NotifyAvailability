@@ -1,25 +1,25 @@
 import React from 'react';
-import { create, act } from 'react-test-renderer';
+import {create, act} from 'react-test-renderer';
+import {Text, View} from 'react-native';
 import UrlInput from '../src/components/UrlInput';
-import { Text, View } from 'react-native';
 
 const mockTextInputRender = jest.fn();
 
 // Mock React Native completely to avoid _interopRequireDefault error
 jest.mock('react-native', () => {
-  const React = require('react');
-  const TextInput = React.forwardRef((props, ref) => {
+  const RNReact = require('react');
+  const TextInput = RNReact.forwardRef((props, ref) => {
     mockTextInputRender(props); // Spy on render
-    return React.createElement('TextInput', {...props, ref});
+    return RNReact.createElement('TextInput', {...props, ref});
   });
 
-  const View = (props) => React.createElement('View', props);
-  const Text = (props) => React.createElement('Text', props);
+  const RNView = props => RNReact.createElement('View', props);
+  const RNText = props => RNReact.createElement('Text', props);
 
   return {
     TextInput,
-    View,
-    Text,
+    View: RNView,
+    Text: RNText,
   };
 });
 
@@ -50,9 +50,8 @@ describe('UrlInput Performance', () => {
       );
     };
 
-    let root;
     act(() => {
-      root = create(<Parent />);
+      create(<Parent />);
     });
 
     const initialRenderCount = mockTextInputRender.mock.calls.length;
