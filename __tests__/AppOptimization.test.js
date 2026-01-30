@@ -1,4 +1,3 @@
-
 import React from 'react';
 import renderer from 'react-test-renderer';
 // We don't import TextInput from react-native here because we are mocking it.
@@ -94,9 +93,12 @@ it('Case Sensitive Search handler reference check', () => {
   const component = renderer.create(<App />);
   const root = component.root;
 
-  const findSettingsSwitch = () => root.findAll(node =>
-    node.type.name === 'SettingsSwitch' && node.props.label === 'Case Sensitive Search:'
-  )[0];
+  const findSettingsSwitch = () =>
+    root.findAll(
+      node =>
+        node.type.name === 'SettingsSwitch' &&
+        node.props.label === 'Case Sensitive Search:',
+    )[0];
 
   let switchComp = findSettingsSwitch();
   const handler1 = switchComp.props.onValueChange;
@@ -111,8 +113,6 @@ it('Case Sensitive Search handler reference check', () => {
 
   // Let's rely on finding by type name "TextInput" if react-test-renderer supports it for functional components.
   // Or better, we can find by props passed to it. UrlInput passes 'autoCapitalize="none"'.
-
-  const allTextInputs = root.findAll(node => node.type === 'TextInput' || (node.type.render && node.type.render.name === 'TextInput') || node.type.name === 'TextInput' || (node.props.onChangeText && node.props.value !== undefined));
 
   // The mock uses createElement('TextInput'...), so the type in the output tree will be 'TextInput'.
   // However, the component in the tree is the Mocked TextInput.
@@ -130,9 +130,9 @@ it('Case Sensitive Search handler reference check', () => {
   const handler2 = switchComp.props.onValueChange;
 
   if (handler1 === handler2) {
-      console.log('Handler is stable (OPTIMIZED)');
+    console.log('Handler is stable (OPTIMIZED)');
   } else {
-      console.log('Handler is new instance (UNOPTIMIZED)');
+    console.log('Handler is new instance (UNOPTIMIZED)');
   }
 
   expect(handler1).toBe(handler2);
