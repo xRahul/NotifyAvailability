@@ -37,6 +37,7 @@ jest.mock('../src/services/BackgroundService', () => ({
 
 // Fully mock react-native to avoid renderer issues
 jest.mock('react-native', () => {
+  // eslint-disable-next-line no-shadow
   const React = require('react');
   const View = props => React.createElement('View', props, props.children);
   const Text = props => React.createElement('Text', props, props.children);
@@ -97,9 +98,9 @@ describe('Handler Stability Benchmark', () => {
 
     // Helper to find the specific SettingsSwitch
     const findSwitch = () => {
-      return root.findAllByType(SettingsSwitch).find(
-        node => node.props.label === 'Search Absence of Text:'
-      );
+      return root
+        .findAllByType(SettingsSwitch)
+        .find(node => node.props.label === 'Search Absence of Text:');
     };
 
     const settingsSwitchBefore = findSwitch();
