@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Platform,
   Text,
@@ -114,13 +114,13 @@ const App = () => {
     loadState();
   }, []);
 
-  const persist = async (key, value) => {
+  const persist = useCallback(async (key, value) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
   const createPrefetchJobs = async () => {
     try {
