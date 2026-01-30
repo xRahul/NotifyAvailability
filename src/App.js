@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Platform,
   Text,
@@ -114,13 +114,13 @@ const App = () => {
     loadState();
   }, []);
 
-  const persist = async (key, value) => {
+  const persist = useCallback(async (key, value) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
   const createPrefetchJobs = async () => {
     try {
@@ -189,6 +189,24 @@ const App = () => {
     refreshWebView();
   };
 
+  const handleCaseSensitiveChange = useCallback(
+    value => {
+      const valStr = value ? 'yes' : 'no';
+      setCaseSensitiveSearch(valStr);
+      persist('caseSensitiveSearch', valStr);
+    },
+    [persist],
+  );
+
+  const handleSearchAbsenceChange = useCallback(
+    value => {
+      const valStr = value ? 'yes' : 'no';
+      setSearchAbsence(valStr);
+      persist('searchAbsence', valStr);
+    },
+    [persist],
+  );
+
   const webViewProps = {};
   if (webPlatformType === WEB_PLATFORM_DESKTOP) {
     webViewProps.userAgent = USER_AGENT_DESKTOP;
@@ -217,21 +235,13 @@ const App = () => {
       <SettingsSwitch
         label="Case Sensitive Search:"
         value={caseSensitiveSearch === 'yes'}
-        onValueChange={value => {
-          const valStr = value ? 'yes' : 'no';
-          setCaseSensitiveSearch(valStr);
-          persist('caseSensitiveSearch', valStr);
-        }}
+        onValueChange={handleCaseSensitiveChange}
       />
 
       <SettingsSwitch
         label="Search Absence of Text:"
         value={searchAbsence === 'yes'}
-        onValueChange={value => {
-          const valStr = value ? 'yes' : 'no';
-          setSearchAbsence(valStr);
-          persist('searchAbsence', valStr);
-        }}
+        onValueChange={handleSearchAbsenceChange}
       />
 
       <PlatformPicker
