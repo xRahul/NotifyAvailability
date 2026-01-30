@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Platform,
   Text,
@@ -114,13 +114,17 @@ const App = () => {
     loadState();
   }, []);
 
-  const persist = async (key, value) => {
+  const persist = useCallback(async (key, value) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
+
+  const handleUrlSubmit = useCallback(() => {
+    searchTextInputRef.current && searchTextInputRef.current.focus();
+  }, []);
 
   const createPrefetchJobs = async () => {
     try {
@@ -202,9 +206,7 @@ const App = () => {
         url={url}
         setUrl={setUrl}
         persist={persist}
-        onSubmitEditing={() =>
-          searchTextInputRef.current && searchTextInputRef.current.focus()
-        }
+        onSubmitEditing={handleUrlSubmit}
       />
 
       <SearchInput
