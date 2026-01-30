@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Platform,
   Text,
@@ -44,6 +44,14 @@ PushNotification.configure({
   popInitialNotification: true,
   requestPermissions: true,
 });
+
+const persist = async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const App = () => {
   const [url, setUrl] = useState('');
@@ -114,13 +122,11 @@ const App = () => {
     loadState();
   }, []);
 
-  const persist = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const handleSearchAbsenceChange = useCallback(value => {
+    const valStr = value ? 'yes' : 'no';
+    setSearchAbsence(valStr);
+    persist('searchAbsence', valStr);
+  }, []);
 
   const createPrefetchJobs = async () => {
     try {
@@ -227,11 +233,7 @@ const App = () => {
       <SettingsSwitch
         label="Search Absence of Text:"
         value={searchAbsence === 'yes'}
-        onValueChange={value => {
-          const valStr = value ? 'yes' : 'no';
-          setSearchAbsence(valStr);
-          persist('searchAbsence', valStr);
-        }}
+        onValueChange={handleSearchAbsenceChange}
       />
 
       <PlatformPicker
