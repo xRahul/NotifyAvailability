@@ -1,7 +1,7 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, memo} from 'react';
 import {TextInput} from 'react-native';
 
-const SearchInput = forwardRef(({searchText, setSearchText, persist}, ref) => {
+const SearchInput = memo(forwardRef(({searchText, setSearchText, persist}, ref) => {
   return (
     <TextInput
       onChangeText={text => {
@@ -17,6 +17,6 @@ const SearchInput = forwardRef(({searchText, setSearchText, persist}, ref) => {
       ref={ref}
     />
   );
-});
+}));
 
 export default SearchInput;

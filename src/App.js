@@ -45,6 +45,14 @@ PushNotification.configure({
   requestPermissions: true,
 });
 
+const persist = async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const App = () => {
   const [url, setUrl] = useState('');
   const [searchText, setSearchText] = useState('');
@@ -113,14 +121,6 @@ const App = () => {
     };
     loadState();
   }, []);
-
-  const persist = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const createPrefetchJobs = async () => {
     try {
