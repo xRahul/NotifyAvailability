@@ -83,10 +83,7 @@ const App = () => {
         if (updates.taskSet) {
           if (updates.taskSet === 'yes') {
             BackgroundTimer.stopBackgroundTimer();
-            BackgroundTimer.runBackgroundTimer(
-              background_task,
-              1000 * 60 * 15,
-            );
+            BackgroundTimer.runBackgroundTimer(background_task, 1000 * 60 * 15);
           } else {
             BackgroundTimer.stopBackgroundTimer();
           }
@@ -114,9 +111,9 @@ const App = () => {
       const trimmedUrl = config.url.trim();
 
       setConfig(prev => ({
-          ...prev,
-          url: trimmedUrl,
-          taskSet: 'yes'
+        ...prev,
+        url: trimmedUrl,
+        taskSet: 'yes',
       }));
 
       BackgroundTimer.stopBackgroundTimer();
