@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import renderer, { act } from 'react-test-renderer';
+import React, {useState} from 'react';
+import renderer, {act} from 'react-test-renderer';
 import SearchInput from '../src/components/SearchInput';
-import { TextInput } from 'react-native';
+import {TextInput} from 'react-native';
 
 const mockRenderSpy = jest.fn();
 
@@ -36,7 +36,10 @@ describe('SearchInput Re-render Benchmark', () => {
             setSearchText={setSearchTextMock}
             persist={stablePersist}
           />
-          <TextInput testID="updater" onChangeText={() => setCount(count + 1)} />
+          <TextInput
+            testID="updater"
+            onChangeText={() => setCount(count + 1)}
+          />
         </React.Fragment>
       );
     };
@@ -52,7 +55,7 @@ describe('SearchInput Re-render Benchmark', () => {
     mockRenderSpy.mockClear();
 
     act(() => {
-        updater.props.onChangeText('update');
+      updater.props.onChangeText('update');
     });
 
     // With React.memo, SearchInput should NOT re-render because props are stable.
