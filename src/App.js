@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Platform,
   Text,
@@ -44,6 +44,14 @@ PushNotification.configure({
   popInitialNotification: true,
   requestPermissions: true,
 });
+
+const persist = async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const App = () => {
   const [url, setUrl] = useState('');
@@ -113,14 +121,6 @@ const App = () => {
     };
     loadState();
   }, []);
-
-  const persist = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const createPrefetchJobs = async () => {
     try {
@@ -194,6 +194,10 @@ const App = () => {
     webViewProps.userAgent = USER_AGENT_DESKTOP;
   }
 
+  const handleUrlSubmit = useCallback(() => {
+    searchTextInputRef.current && searchTextInputRef.current.focus();
+  }, []);
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -202,9 +206,7 @@ const App = () => {
         url={url}
         setUrl={setUrl}
         persist={persist}
-        onSubmitEditing={() =>
-          searchTextInputRef.current && searchTextInputRef.current.focus()
-        }
+        onSubmitEditing={handleUrlSubmit}
       />
 
       <SearchInput
