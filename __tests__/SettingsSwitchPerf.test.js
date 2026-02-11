@@ -1,7 +1,6 @@
 import React from 'react';
 import App from '../src/App';
 import renderer, {act} from 'react-test-renderer';
-import AsyncStorage from '@react-native-community/async-storage';
 
 // Mock dependencies
 jest.mock('react-native-background-timer', () => ({
@@ -42,13 +41,13 @@ jest.mock('../src/services/BackgroundService', () => ({
 const mockSwitchRender = jest.fn();
 
 jest.mock('react-native', () => {
-  const React = require('react');
-  const View = props => React.createElement('View', props, props.children);
-  const Text = props => React.createElement('Text', props, props.children);
+  const RNReact = require('react');
+  const View = props => RNReact.createElement('View', props, props.children);
+  const Text = props => RNReact.createElement('Text', props, props.children);
   const ScrollView = props =>
-    React.createElement('ScrollView', props, props.children);
-  const TextInput = React.forwardRef((props, ref) =>
-    React.createElement('TextInput', {
+    RNReact.createElement('ScrollView', props, props.children);
+  const TextInput = RNReact.forwardRef((props, ref) =>
+    RNReact.createElement('TextInput', {
       ...props,
       ref,
       onChangeText: text => {
@@ -62,15 +61,16 @@ jest.mock('react-native', () => {
   // We spy on Switch render
   const Switch = props => {
     mockSwitchRender(props);
-    return React.createElement('Switch', props);
+    return RNReact.createElement('Switch', props);
   };
 
-  const Button = props => React.createElement('Button', props);
+  const Button = props => RNReact.createElement('Button', props);
   const ActivityIndicator = props =>
-    React.createElement('ActivityIndicator', props);
+    RNReact.createElement('ActivityIndicator', props);
 
-  const Picker = props => React.createElement('Picker', props, props.children);
-  Picker.Item = props => React.createElement('Picker.Item', props);
+  const Picker = props =>
+    RNReact.createElement('Picker', props, props.children);
+  Picker.Item = props => RNReact.createElement('Picker.Item', props);
 
   const PushNotificationIOS = {
     addEventListener: jest.fn(),
@@ -120,8 +120,6 @@ it('prevents unnecessary re-renders of SettingsSwitch', async () => {
   // Wait for useEffect to finish (loadState)
   // The mock of AsyncStorage returns promises, we need to wait for them.
   // act handles this if we await properly.
-
-  const initialRenderCount = mockSwitchRender.mock.calls.length;
 
   // Reset count to measure update impact
   mockSwitchRender.mockClear();

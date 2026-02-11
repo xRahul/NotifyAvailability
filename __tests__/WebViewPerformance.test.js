@@ -25,7 +25,8 @@ jest.mock('@react-native-community/async-storage', () => ({
 
 // Mock react-native-webview to capture props
 jest.mock('react-native-webview', () => {
-  const React = require('react');
+  // eslint-disable-next-line no-unused-vars
+  const RNReact = require('react');
   const {View} = require('react-native');
   // Return a component that renders View so it's not null,
   // and attach a spy to capture props.
@@ -42,22 +43,22 @@ jest.mock('../src/services/BackgroundService', () => ({
 
 // Fully mock react-native to avoid renderer issues
 jest.mock('react-native', () => {
-  // eslint-disable-next-line no-shadow
-  const React = require('react');
-  const View = props => React.createElement('View', props, props.children);
-  const Text = props => React.createElement('Text', props, props.children);
+  const RNReact = require('react');
+  const View = props => RNReact.createElement('View', props, props.children);
+  const Text = props => RNReact.createElement('Text', props, props.children);
   const ScrollView = props =>
-    React.createElement('ScrollView', props, props.children);
-  const TextInput = React.forwardRef((props, ref) =>
-    React.createElement('TextInput', {...props, ref}),
+    RNReact.createElement('ScrollView', props, props.children);
+  const TextInput = RNReact.forwardRef((props, ref) =>
+    RNReact.createElement('TextInput', {...props, ref}),
   );
-  const Switch = props => React.createElement('Switch', props);
-  const Button = props => React.createElement('Button', props);
+  const Switch = props => RNReact.createElement('Switch', props);
+  const Button = props => RNReact.createElement('Button', props);
   const ActivityIndicator = props =>
-    React.createElement('ActivityIndicator', props);
+    RNReact.createElement('ActivityIndicator', props);
 
-  const Picker = props => React.createElement('Picker', props, props.children);
-  Picker.Item = props => React.createElement('Picker.Item', props);
+  const Picker = props =>
+    RNReact.createElement('Picker', props, props.children);
+  Picker.Item = props => RNReact.createElement('Picker.Item', props);
 
   const PushNotificationIOS = {
     addEventListener: jest.fn(),
@@ -105,9 +106,9 @@ describe('WebView Performance', () => {
 
     // 1. Enter URL
     // Find the TextInput for URL input (UrlInput component)
-    const textInput = root.findAllByType('TextInput').find(
-      node => node.props.placeholder === 'Enter URL https://...'
-    );
+    const textInput = root
+      .findAllByType('TextInput')
+      .find(node => node.props.placeholder === 'Enter URL https://...');
 
     if (!textInput) {
       throw new Error('Could not find URL TextInput');
