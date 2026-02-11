@@ -29,7 +29,9 @@ import PlatformPicker from './components/PlatformPicker';
 PushNotification.configure({
   // (required) Called when a remote or local notification is opened or received
   onNotification(notification) {
-    console.log('NOTIFICATION:', notification);
+    if (__DEV__) {
+      console.log('NOTIFICATION:', notification);
+    }
 
     // process the notification
 
