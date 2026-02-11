@@ -1,6 +1,3 @@
-import React from 'react';
-import PushNotification from 'react-native-push-notification';
-
 // Mock dependencies
 jest.mock('react-native-background-timer', () => ({
   stopBackgroundTimer: jest.fn(),
@@ -34,7 +31,6 @@ jest.mock('../src/services/BackgroundService', () => ({
 
 // Fully mock react-native to avoid renderer issues
 jest.mock('react-native', () => {
-  // eslint-disable-next-line no-shadow
   const React = require('react');
   const View = props => React.createElement('View', props, props.children);
   const Text = props => React.createElement('Text', props, props.children);
@@ -106,10 +102,10 @@ describe('Notification Logging Performance', () => {
 
     let onNotification;
     jest.isolateModules(() => {
-        const PushNotification = require('react-native-push-notification');
-        require('../src/App');
-        const configureCall = PushNotification.configure.mock.calls[0];
-        onNotification = configureCall[0].onNotification;
+      const PushNotification = require('react-native-push-notification');
+      require('../src/App');
+      const configureCall = PushNotification.configure.mock.calls[0];
+      onNotification = configureCall[0].onNotification;
     });
 
     expect(onNotification).toBeDefined();
@@ -117,7 +113,7 @@ describe('Notification Logging Performance', () => {
     // Call onNotification
     const notification = {
       finish: jest.fn(),
-      data: { test: 'data' },
+      data: {test: 'data'},
     };
     onNotification(notification);
 
@@ -131,10 +127,10 @@ describe('Notification Logging Performance', () => {
 
     let onNotification;
     jest.isolateModules(() => {
-        const PushNotification = require('react-native-push-notification');
-        require('../src/App');
-        const configureCall = PushNotification.configure.mock.calls[0];
-        onNotification = configureCall[0].onNotification;
+      const PushNotification = require('react-native-push-notification');
+      require('../src/App');
+      const configureCall = PushNotification.configure.mock.calls[0];
+      onNotification = configureCall[0].onNotification;
     });
 
     expect(onNotification).toBeDefined();
@@ -142,7 +138,7 @@ describe('Notification Logging Performance', () => {
     // Call onNotification
     const notification = {
       finish: jest.fn(),
-      data: { test: 'data' },
+      data: {test: 'data'},
     };
     onNotification(notification);
 
