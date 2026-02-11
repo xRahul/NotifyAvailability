@@ -64,6 +64,7 @@ const App = () => {
   const [searchAbsence, setSearchAbsence] = useState('no');
 
   const searchTextInputRef = useRef(null);
+  const webViewRef = useRef(null);
 
   useEffect(() => {
     const loadState = async () => {
@@ -172,15 +173,10 @@ const App = () => {
   };
 
   const refreshWebView = () => {
-    setLoading(true);
-    // Temporarily clear URL to force reload
-    const currentUrl = url;
-    setUrl('');
-    // Use timeout to allow render cycle to clear WebView
-    setTimeout(() => {
-      setUrl(currentUrl);
-      setLoading(false);
-    }, 50);
+    if (webViewRef.current) {
+      setLoading(true);
+      webViewRef.current.reload();
+    }
   };
 
   const pickerValueChanged = itemValue => {
@@ -267,10 +263,13 @@ const App = () => {
 
       {taskSet === 'yes' && url !== '' && (
         <WebView
+          ref={webViewRef}
           style={styles.webview}
           source={{uri: url}}
           dataDetectorTypes="all"
           scalesPageToFit={false}
+          onLoadStart={() => setLoading(true)}
+          onLoadEnd={() => setLoading(false)}
           {...webViewProps}
         />
       )}
