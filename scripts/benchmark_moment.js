@@ -7,7 +7,9 @@ console.log(`Running benchmark with ${ITERATIONS} iterations...`);
 // Benchmark Moment.js
 const startMoment = process.hrtime();
 for (let i = 0; i < ITERATIONS; i++) {
-  moment().valueOf().toString();
+  moment()
+    .valueOf()
+    .toString();
 }
 const endMoment = process.hrtime(startMoment);
 const timeMoment = endMoment[0] * 1000 + endMoment[1] / 1000000;

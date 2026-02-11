@@ -54,10 +54,7 @@ export const checkUrlForText = async checkUrlForTextData => {
       });
     }
 
-    await AsyncStorage.setItem(
-      'lastChecked',
-      Date.now().toString(),
-    );
+    await AsyncStorage.setItem('lastChecked', Date.now().toString());
   } catch (error) {
     console.log(error);
   }
