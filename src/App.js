@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {
   Platform,
   Text,
@@ -198,6 +198,8 @@ const App = () => {
     searchTextInputRef.current && searchTextInputRef.current.focus();
   }, []);
 
+  const source = useMemo(() => ({uri: url}), [url]);
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -268,7 +270,7 @@ const App = () => {
       {taskSet === 'yes' && url !== '' && (
         <WebView
           style={styles.webview}
-          source={{uri: url}}
+          source={source}
           dataDetectorTypes="all"
           scalesPageToFit={false}
           {...webViewProps}
