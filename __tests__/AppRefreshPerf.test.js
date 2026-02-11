@@ -17,18 +17,19 @@ const mockMount = jest.fn();
 const mockUnmount = jest.fn();
 
 jest.mock('react-native-webview', () => {
+  // eslint-disable-next-line no-shadow
   const React = require('react');
   const WebView = React.forwardRef((props, ref) => {
     React.useImperativeHandle(ref, () => ({
       reload: mockReload,
     }));
     React.useEffect(() => {
-        mockMount();
-        return () => mockUnmount();
+      mockMount();
+      return () => mockUnmount();
     }, []);
-    return React.createElement('View', { ...props, testID: 'webview' });
+    return React.createElement('View', {...props, testID: 'webview'});
   });
-  return { WebView };
+  return {WebView};
 });
 
 jest.mock('../src/services/BackgroundService', () => ({
@@ -38,6 +39,7 @@ jest.mock('../src/services/BackgroundService', () => ({
 
 // Fully mock react-native
 jest.mock('react-native', () => {
+  // eslint-disable-next-line no-shadow
   const React = require('react');
   const View = props => React.createElement('View', props, props.children);
   const Text = props => React.createElement('Text', props, props.children);
@@ -89,9 +91,9 @@ jest.mock('react-native', () => {
 
 // Mock AsyncStorage to return initial state
 const initialState = [
-    ['url', 'http://google.com'],
-    ['taskSet', 'yes'],
-    ['webPlatformType', 'mobile']
+  ['url', 'http://google.com'],
+  ['taskSet', 'yes'],
+  ['webPlatformType', 'mobile'],
 ];
 const mockMultiGet = jest.fn(() => Promise.resolve(initialState));
 
@@ -121,7 +123,7 @@ describe('WebView Refresh Performance', () => {
 
     // Wait for useEffect to load state
     await renderer.act(async () => {
-        await Promise.resolve(); // Flush promises
+      await Promise.resolve(); // Flush promises
     });
 
     // Check if WebView is mounted
@@ -134,13 +136,13 @@ describe('WebView Refresh Performance', () => {
 
     // Trigger value change
     await renderer.act(async () => {
-        picker.props.onValueChange('desktop');
-        await Promise.resolve(); // Ensure all promises are flushed
+      picker.props.onValueChange('desktop');
+      await Promise.resolve(); // Ensure all promises are flushed
     });
 
     // Fast-forward time for setTimeout (if any remaining logic uses it, though we removed it)
     await renderer.act(async () => {
-        jest.runAllTimers();
+      jest.runAllTimers();
     });
 
     // Expect WebView to stay mounted
