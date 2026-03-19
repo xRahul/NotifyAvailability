@@ -22,4 +22,4 @@ const PlatformPicker = ({selectedValue, onValueChange}) => {
   );
 };
 
-export default PlatformPicker;
+export default React.memo(PlatformPicker);

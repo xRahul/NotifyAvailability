@@ -13,4 +13,10 @@ const SettingsSwitch = ({label, value, onValueChange}) => {
   );
 };
 
-export default SettingsSwitch;
+const arePropsEqual = (prevProps, nextProps) => {
+  return (
+    prevProps.label === nextProps.label && prevProps.value === nextProps.value
+  );
+};
+
+export default React.memo(SettingsSwitch, arePropsEqual);

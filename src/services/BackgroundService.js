@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import BackgroundTimer from 'react-native-background-timer';
 import PushNotification from 'react-native-push-notification';
-import moment from 'moment';
 import {USER_AGENT_DESKTOP, WEB_PLATFORM_DESKTOP} from '../Constants';
 import {escapeRegExp} from '../Utils';
 
@@ -55,12 +54,7 @@ export const checkUrlForText = async checkUrlForTextData => {
       });
     }
 
-    await AsyncStorage.setItem(
-      'lastChecked',
-      moment()
-        .valueOf()
-        .toString(),
-    );
+    await AsyncStorage.setItem('lastChecked', Date.now().toString());
   } catch (error) {
     console.log(error);
   }
