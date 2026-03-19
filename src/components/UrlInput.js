@@ -22,4 +22,4 @@ const UrlInput = ({url, setUrl, persist, onSubmitEditing}) => {
   );
 };
 
-export default UrlInput;
+export default React.memo(UrlInput);

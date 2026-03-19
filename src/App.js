@@ -200,6 +200,10 @@ const App = () => {
     webViewProps.userAgent = USER_AGENT_DESKTOP;
   }
 
+  const handleUrlSubmit = useCallback(() => {
+    searchTextInputRef.current && searchTextInputRef.current.focus();
+  }, []);
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
@@ -208,9 +212,7 @@ const App = () => {
         url={url}
         setUrl={setUrl}
         persist={persist}
-        onSubmitEditing={() =>
-          searchTextInputRef.current && searchTextInputRef.current.focus()
-        }
+        onSubmitEditing={handleUrlSubmit}
       />
 
       <SearchInput
