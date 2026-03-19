@@ -29,7 +29,9 @@ import PlatformPicker from './components/PlatformPicker';
 PushNotification.configure({
   // (required) Called when a remote or local notification is opened or received
   onNotification(notification) {
-    console.log('NOTIFICATION:', notification);
+    if (__DEV__) {
+      console.log('NOTIFICATION:', notification);
+    }
 
     // process the notification
 
@@ -54,14 +56,16 @@ const persist = async (key, value) => {
 };
 
 const App = () => {
-  const [url, setUrl] = useState('');
-  const [searchText, setSearchText] = useState('');
-  const [taskSet, setTaskSet] = useState('no');
+  const [config, setConfig] = useState({
+    url: '',
+    searchText: '',
+    taskSet: 'no',
+    webPlatformType: WEB_PLATFORM_MOBILE,
+    lastChecked: '0',
+    caseSensitiveSearch: 'yes',
+    searchAbsence: 'no',
+  });
   const [loading, setLoading] = useState(false);
-  const [webPlatformType, setWebPlatformType] = useState(WEB_PLATFORM_MOBILE);
-  const [lastChecked, setLastChecked] = useState('0');
-  const [caseSensitiveSearch, setCaseSensitiveSearch] = useState('yes');
-  const [searchAbsence, setSearchAbsence] = useState('no');
 
   const searchTextInputRef = useRef(null);
   const webViewRef = useRef(null);
@@ -80,42 +84,23 @@ const App = () => {
         ];
         const result = await AsyncStorage.multiGet(keys);
 
+        const updates = {};
         result.forEach(([key, value]) => {
           if (value !== null) {
-            switch (key) {
-              case 'url':
-                setUrl(value);
-                break;
-              case 'searchText':
-                setSearchText(value);
-                break;
-              case 'taskSet':
-                setTaskSet(value);
-                if (value === 'yes') {
-                  BackgroundTimer.stopBackgroundTimer();
-                  BackgroundTimer.runBackgroundTimer(
-                    background_task,
-                    1000 * 60 * 15,
-                  );
-                } else {
-                  BackgroundTimer.stopBackgroundTimer();
-                }
-                break;
-              case 'webPlatformType':
-                setWebPlatformType(value);
-                break;
-              case 'lastChecked':
-                setLastChecked(value);
-                break;
-              case 'caseSensitiveSearch':
-                setCaseSensitiveSearch(value);
-                break;
-              case 'searchAbsence':
-                setSearchAbsence(value);
-                break;
-            }
+            updates[key] = value;
           }
         });
+
+        if (updates.taskSet) {
+          if (updates.taskSet === 'yes') {
+            BackgroundTimer.stopBackgroundTimer();
+            BackgroundTimer.runBackgroundTimer(background_task, 1000 * 60 * 15);
+          } else {
+            BackgroundTimer.stopBackgroundTimer();
+          }
+        }
+
+        setConfig(prev => ({...prev, ...updates}));
       } catch (error) {
         console.log(error);
       }
@@ -126,23 +111,27 @@ const App = () => {
   const createPrefetchJobs = async () => {
     try {
       setLoading(true);
-      const trimmedUrl = url.trim();
-      setUrl(trimmedUrl);
+      const trimmedUrl = config.url.trim();
+
+      setConfig(prev => ({
+        ...prev,
+        url: trimmedUrl,
+        taskSet: 'yes',
+      }));
 
       BackgroundTimer.stopBackgroundTimer();
       BackgroundTimer.runBackgroundTimer(background_task, 1000 * 60 * 15);
 
-      setTaskSet('yes');
       AsyncStorage.multiSet([['url', trimmedUrl], ['taskSet', 'yes']]).catch(
         error => console.log(error),
       );
 
       const checkUrlForTextData = {
         url: trimmedUrl,
-        searchText,
-        webPlatformType,
-        caseSensitiveSearch,
-        searchAbsence,
+        searchText: config.searchText,
+        webPlatformType: config.webPlatformType,
+        caseSensitiveSearch: config.caseSensitiveSearch,
+        searchAbsence: config.searchAbsence,
       };
 
       await checkUrlForText(checkUrlForTextData);
@@ -150,12 +139,13 @@ const App = () => {
       const now = moment()
         .valueOf()
         .toString();
-      setLastChecked(now);
+
+      setConfig(prev => ({...prev, lastChecked: now}));
       persist('lastChecked', now);
     } catch (error) {
       console.log(error);
       BackgroundTimer.stopBackgroundTimer();
-      setTaskSet('no');
+      setConfig(prev => ({...prev, taskSet: 'no'}));
       persist('taskSet', 'no');
     } finally {
       setLoading(false);
@@ -165,7 +155,7 @@ const App = () => {
   const deletePrefetchJobs = () => {
     try {
       BackgroundTimer.stopBackgroundTimer();
-      setTaskSet('no');
+      setConfig(prev => ({...prev, taskSet: 'no'}));
       persist('taskSet', 'no');
     } catch (error) {
       console.log(error);
@@ -180,13 +170,16 @@ const App = () => {
   };
 
   const pickerValueChanged = itemValue => {
-    setWebPlatformType(itemValue);
+    setConfig(prev => ({...prev, webPlatformType: itemValue}));
     persist('webPlatformType', itemValue);
-    refreshWebView();
+    // Use timeout to allow React to re-render the WebView with the new userAgent prop before reloading
+    setTimeout(() => {
+      refreshWebView();
+    }, 50);
   };
 
   const webViewProps = {};
-  if (webPlatformType === WEB_PLATFORM_DESKTOP) {
+  if (config.webPlatformType === WEB_PLATFORM_DESKTOP) {
     webViewProps.userAgent = USER_AGENT_DESKTOP;
   }
 
@@ -194,64 +187,69 @@ const App = () => {
     searchTextInputRef.current && searchTextInputRef.current.focus();
   }, []);
 
+  const setUrlMemo = useCallback(
+    text => setConfig(prev => ({...prev, url: text})),
+    [],
+  );
+
   return (
     <ScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="always">
       <UrlInput
-        url={url}
-        setUrl={setUrl}
+        url={config.url}
+        setUrl={setUrlMemo}
         persist={persist}
         onSubmitEditing={handleUrlSubmit}
       />
 
       <SearchInput
         ref={searchTextInputRef}
-        searchText={searchText}
-        setSearchText={setSearchText}
+        searchText={config.searchText}
+        setSearchText={text => setConfig(prev => ({...prev, searchText: text}))}
         persist={persist}
       />
 
       <SettingsSwitch
         label="Case Sensitive Search:"
-        value={caseSensitiveSearch === 'yes'}
+        value={config.caseSensitiveSearch === 'yes'}
         onValueChange={value => {
           const valStr = value ? 'yes' : 'no';
-          setCaseSensitiveSearch(valStr);
+          setConfig(prev => ({...prev, caseSensitiveSearch: valStr}));
           persist('caseSensitiveSearch', valStr);
         }}
       />
 
       <SettingsSwitch
         label="Search Absence of Text:"
-        value={searchAbsence === 'yes'}
+        value={config.searchAbsence === 'yes'}
         onValueChange={value => {
           const valStr = value ? 'yes' : 'no';
-          setSearchAbsence(valStr);
+          setConfig(prev => ({...prev, searchAbsence: valStr}));
           persist('searchAbsence', valStr);
         }}
       />
 
       <PlatformPicker
-        selectedValue={webPlatformType}
+        selectedValue={config.webPlatformType}
         onValueChange={pickerValueChanged}
       />
 
       <Text style={styles.lastCheckedText}>
         Last Checked:
-        {lastChecked === '0'
+        {config.lastChecked === '0'
           ? 'Never'
-          : moment(parseFloat(lastChecked)).fromNow()}
+          : moment(parseFloat(config.lastChecked)).fromNow()}
       </Text>
 
-      {taskSet === 'no' && (
+      {config.taskSet === 'no' && (
         <Button
           style={styles.checkingButton}
           title="Start Checking"
           onPress={createPrefetchJobs}
         />
       )}
-      {taskSet === 'yes' && (
+      {config.taskSet === 'yes' && (
         <Button
           style={styles.checkingButton}
           title="Stop Checking"
@@ -261,11 +259,11 @@ const App = () => {
 
       {loading && <ActivityIndicator size="large" color="#7a42f4" />}
 
-      {taskSet === 'yes' && url !== '' && (
+      {config.taskSet === 'yes' && config.url !== '' && (
         <WebView
           ref={webViewRef}
           style={styles.webview}
-          source={{uri: url}}
+          source={{uri: config.url}}
           dataDetectorTypes="all"
           scalesPageToFit={false}
           onLoadStart={() => setLoading(true)}
