@@ -135,9 +135,7 @@ const App = () => {
 
       await checkUrlForText(checkUrlForTextData);
 
-      const now = moment()
-        .valueOf()
-        .toString();
+      const now = Date.now().toString();
 
       setConfig(prev => ({...prev, lastChecked: now}));
       persist('lastChecked', now);
@@ -235,7 +233,7 @@ const App = () => {
         Last Checked:
         {config.lastChecked === '0'
           ? 'Never'
-          : moment(parseFloat(config.lastChecked)).fromNow()}
+          : moment(Number(config.lastChecked)).fromNow()}
       </Text>
 
       {config.taskSet === 'no' && (
