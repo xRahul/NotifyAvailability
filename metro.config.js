@@ -6,12 +6,6 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
  *
  * @type {import('@react-native/metro-config').MetroConfig}
  */
-const config = {
-  resolver: {
-    // Prefer TypeScript sources so src/App.tsx wins over legacy src/App.js
-    // until the old code is fully replaced.
-    sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'cjs', 'json'],
-  },
-};
+const config = {};
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

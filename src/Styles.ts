@@ -1,14 +1,16 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 10,
+  safeArea: {
     flex: 1,
-    flexDirection: 'column',
+  },
+  container: {
+    flexGrow: 1,
+    padding: 10,
     justifyContent: 'center',
   },
   webview: {
-    height: 1500,
+    flex: 1,
     marginTop: 20,
   },
   pickerOverView: {
@@ -31,7 +33,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: 'center',
   },
-  checkingButton: {},
+  errorText: {
+    color: '#c62828',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
 });
 
 export default styles;
