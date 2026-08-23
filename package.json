@@ -1,6 +1,6 @@
 {
   "name": "notify-availability",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "main": "index.ts",
   "scripts": {
