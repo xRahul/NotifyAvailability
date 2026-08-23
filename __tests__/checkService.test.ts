@@ -235,6 +235,18 @@ describe('runCheck', () => {
     });
   });
 
+  describe('storage failure after successful fetch', () => {
+    it('rejects instead of reporting a found-text check as a miss', async () => {
+      fetchMock.mockResolvedValue({ text: async () => HTML });
+      mockedSave.mockRejectedValueOnce(new Error('storage down'));
+
+      // HTML contains "In Stock"; the old catch-all swallowed the storage
+      // rejection and resolved {textFound:false} — a fabricated miss.
+      await expect(runCheck(makeCfg())).rejects.toThrow('storage down');
+      expect(mockedSave).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('lastChecked persistence', () => {
     it('persists Date.now on successful fetch regardless of match result', async () => {
       fetchMock.mockResolvedValue({

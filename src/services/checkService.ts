@@ -14,35 +14,36 @@ export async function runCheck(cfg: WatchConfig): Promise<CheckOutcome> {
     return { textFound: false, notified: false };
   }
 
+  let html: string;
   try {
     const headers =
       cfg.webPlatformType === WEB_PLATFORM_DESKTOP
         ? { 'User-Agent': USER_AGENT_DESKTOP }
         : undefined;
     const response = await fetch(cfg.url, { headers });
-    const html = await response.text();
-
-    const textFound =
-      cfg.caseSensitiveSearch === 'yes'
-        ? html.includes(cfg.searchText)
-        : new RegExp(escapeRegExp(cfg.searchText), 'i').test(html);
-
-    await saveWatchConfig({ lastChecked: Date.now().toString() });
-
-    const shouldNotify =
-      (cfg.searchAbsence === 'no' && textFound) ||
-      (cfg.searchAbsence === 'yes' && !textFound);
-    if (!shouldNotify) {
-      return { textFound, notified: false };
-    }
-
-    if (!(await ensureNotificationSetup())) {
-      return { textFound, notified: false };
-    }
-
-    await showAvailabilityNotification(cfg.searchText, cfg.url, textFound);
-    return { textFound, notified: true };
+    html = await response.text();
   } catch {
     return { textFound: false, notified: false };
   }
+
+  const textFound =
+    cfg.caseSensitiveSearch === 'yes'
+      ? html.includes(cfg.searchText)
+      : new RegExp(escapeRegExp(cfg.searchText), 'i').test(html);
+
+  await saveWatchConfig({ lastChecked: Date.now().toString() });
+
+  const shouldNotify =
+    (cfg.searchAbsence === 'no' && textFound) ||
+    (cfg.searchAbsence === 'yes' && !textFound);
+  if (!shouldNotify) {
+    return { textFound, notified: false };
+  }
+
+  if (!(await ensureNotificationSetup())) {
+    return { textFound, notified: false };
+  }
+
+  await showAvailabilityNotification(cfg.searchText, cfg.url, textFound);
+  return { textFound, notified: true };
 }
