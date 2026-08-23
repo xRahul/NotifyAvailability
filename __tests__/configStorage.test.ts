@@ -66,6 +66,14 @@ describe('configStorage', () => {
     await expect(AsyncStorage.getItem('taskSet')).resolves.toBe('yes');
   });
 
+  it('skips explicitly undefined patch fields', async () => {
+    await saveWatchConfig({ url: undefined, searchText: 'In Stock' });
+
+    await expect(AsyncStorage.getAllKeys()).resolves.toEqual(['searchText']);
+    await expect(AsyncStorage.getItem('url')).resolves.toBeNull();
+    await expect(AsyncStorage.getItem('searchText')).resolves.toBe('In Stock');
+  });
+
   it('round-trips a saved patch onto defaults', async () => {
     await saveWatchConfig({
       url: 'https://example.com/page',

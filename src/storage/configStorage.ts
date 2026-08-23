@@ -29,7 +29,7 @@ export async function saveWatchConfig(
 ): Promise<void> {
   const entries: Record<string, string> = {};
   for (const key of CONFIG_KEYS) {
-    if (key in patch) {
+    if (patch[key] !== undefined) {
       entries[key] = String(patch[key]);
     }
   }
