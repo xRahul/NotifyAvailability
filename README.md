@@ -1,61 +1,107 @@
-
-
 # NotifyAvailability
 
-
 [![GitHub license](https://img.shields.io/github/license/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/blob/master/License.txt)
-[![Build Status](https://travis-ci.org/xRahul/NotifyAvailability.svg?branch=master)](https://travis-ci.org/xRahul/NotifyAvailability)
 [![Releases](https://img.shields.io/github/release/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/releases/latest)
-[![libraries.io](https://img.shields.io/librariesio/github/xRahul/NotifyAvailability.svg)](https://libraries.io/github/xRahul/NotifyAvailability)
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e1399210d8914483a7d5ecde14665376)](https://www.codacy.com/app/xRahul/NotifyAvailability)
-[![Codeclimate Maintainability](https://api.codeclimate.com/v1/badges/5ff836f879789d82ce9b/maintainability)](https://codeclimate.com/github/xRahul/NotifyAvailability/maintainability)
-[![CodeFactor](https://www.codefactor.io/repository/github/xrahul/notifyavailability/badge)](https://www.codefactor.io/repository/github/xrahul/notifyavailability)
-[![codebeat badge](https://codebeat.co/badges/16954f1e-823a-445e-889f-fa197830b21e)](https://codebeat.co/projects/github-com-xrahul-notifyavailability-master)
+NotifyAvailability watches a webpage for you and posts a local notification when a piece of text appears on it. You pick a URL, the search text, and whether you care about presence or absence; the app re-checks about every 15 minutes in the background until you press Stop. The classic use case: get pinged when a movie booking site finally opens sales for your date.
 
-[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=alert_status)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
-[![SonarCloud Bugs](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=bugs)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
-[![SonarCloud Maintainability](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
-[![SonarCloud Security](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=security_rating)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
-[![SonarCloud Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=NotifyAvailability%3Aapp&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=NotifyAvailability%3Aapp)
+## Features
 
+- **Background watch** — press Start Checking to schedule a periodic background job (~15-minute cadence) and Stop Checking to cancel it
+- **Found or absent** — notifies when the search text shows up by default; the "Search Absence of Text" switch flips that so you hear about disappearance instead (useful for outage or delisting watches)
+- **Case-sensitive search** — off by default
+- **Webpage type** — Mobile, Desktop, or Tablet rendering. Desktop sends a desktop User-Agent on both the background fetch and the in-app preview
+- **Last Checked** — timestamp shown as relative time ("5 minutes ago")
+- **Live preview** — while a watch is active, the page loads in an embedded WebView so you can eyeball what the checker sees
+- **Loading indicator** — spins during the first check after Start
+- **URL validation** — Start refuses URLs that lack the `http://` / `https://` prefix
+- **Auto-resume** — if the app closes while a watch is running, the watch resumes on next launch
 
-### Overview
+## Tech Stack
 
-* This app takes input from the user to set up background periodic check of a webpage for a text.
-* It creates a background task to notify the user if a text is present on the web page or not.
-* This task is executed repeatedly once every ~15 mins depending on the OS.
-* It will also show the time check was last made.
+| Layer                 | Library                                                                                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework             | React Native 0.87 (React 19.2), TypeScript strict                                                                                               |
+| Notifications         | [react-native-notify-kit](https://www.npmjs.com/package/react-native-notify-kit) 10.5                                                           |
+| Background scheduling | [react-native-background-fetch](https://www.npmjs.com/package/react-native-background-fetch) 4.4 (WorkManager-backed periodic fetch on Android) |
+| Persistence           | @react-native-async-storage/async-storage 3.1                                                                                                   |
+| In-app browser        | react-native-webview 14                                                                                                                         |
+| Picker                | @react-native-picker/picker 2.11                                                                                                                |
+| Tooling               | Jest 29 + Testing Library, ESLint, Prettier                                                                                                     |
 
-#### Input Criteria
+The 2019 version used `react-native-push-notification` and a JS timer (`react-native-background-timer`). Both are gone: notifications moved to notify-kit and scheduling moved to native background fetch.
 
-* This app asks the user for a `URL` and a `search text`.
-* You can also set whether to get notification when search text `is present` on the webpage or when it `is absent`.
-* You can set the webpage type to be `desktop` or `mobile` to get different html accordingly.
-* You can set the search to be `case sensitive` or `case insensitive`.
+## Requirements
 
-### Tech Stack
+- Node.js >= 22.11.0 (enforced via `engines` in package.json)
+- Yarn 1.x
+- JDK 17 (Android builds)
+- Android SDK set up for React Native 0.87
 
-* React Native
-  * react-native-background-timer
-  * react-native-push-notification
-* moment.js
+## Getting Started
 
-### Testing
+```sh
+yarn install        # dependencies
+yarn start          # Metro bundler
+yarn android        # build and install on a connected device/emulator
+```
 
-* Tested on Android only.
-* iOS testing is pending (device unavailable)
+### Lint, types, tests
 
-### Steps to execute Locally
+```sh
+yarn lint
+yarn typecheck
+yarn test
+```
 
-* You would need android tools and java
-* Generate a Key by following: [https://facebook.github.io/react-native/docs/signed-apk-android.html](https://facebook.github.io/react-native/docs/signed-apk-android.html)
-* run `yarn` to install dependencies
-* run on connected android device using: `react-native run-android`
-* build the signed apks using: `cd android && ./gradlew assembleRelease`
+CI runs all three on Node 22 for every push and pull request (`.github/workflows/ci.yml`).
 
-### Use Case
+### Building an APK
 
-One use case is that we enter the URL of a movie booking website to get notified when it opens booking for a Cinema on the day we want.
+```sh
+cd android && ./gradlew assembleRelease
+```
+
+Release builds currently sign with the debug keystore, so treat the output as a test artifact until production signing lands. The `android-debug.yml` workflow produces a debug APK on manual dispatch, and `android-release.yml` builds releases on `v*` tags.
+
+## Architecture
+
+```
+src/
+├── App.tsx                     Composition root: config state, URL validation,
+│                               Start/Stop handlers, WebView preview
+├── Styles.ts                   Shared StyleSheet
+├── constants.ts                Desktop User-Agent string, web platform values
+├── types.ts                    WatchConfig shape and defaults
+├── utils.ts                    formatRelativeTime helper
+├── components/
+│   ├── UrlInput.tsx            URL field (memoized)
+│   ├── SearchInput.tsx         Search text field (memoized, forwards ref)
+│   ├── SettingsSwitch.tsx      Labeled switch: case sensitivity, absence mode
+│   └── PlatformPicker.tsx      Mobile/Desktop/Tablet picker
+├── services/
+│   ├── notificationService.ts  Channel setup and local notifications (notify-kit)
+│   ├── checkService.ts         Fetches the page and searches for the text
+│   └── watchScheduler.ts       startWatch / stopWatch / resumeWatchIfNeeded
+│                               over react-native-background-fetch
+└── storage/
+    └── configStorage.ts        loadWatchConfig / saveWatchConfig over AsyncStorage
+```
+
+App.tsx loads the persisted config on launch, resumes a running watch if there was one, and wires the memoized components to `saveWatchConfig`. Services own everything native: notifications, page checks, and the periodic schedule.
+
+Storage keys have not changed since the 2019 app (`url`, `searchText`, `taskSet`, `webPlatformType`, `lastChecked`, `caseSensitiveSearch`, `searchAbsence`, with `yes`/`no` values), so existing installs upgrade with zero migration.
+
+## Known Quirks
+
+- **Tablet behaves like Mobile** — no tablet User-Agent exists; picking Tablet sends the mobile one. Kept as-is to match the original app.
+- **Background cadence belongs to the OS** — WorkManager enforces a 15-minute minimum interval and batches jobs under Doze, so checks can land later than the nominal ~15 minutes.
+- **Notification permission prompt** — the first Start triggers it. Notifications post to the channel id `availability`.
+- **iOS is a scaffold stub** — never built (`pod install` has not been run); `yarn ios` exists in package.json but expect nothing from it.
+- **Debug-keystore release signing** — production signing is deferred (see above).
+
+## Use Case
+
+One use case: enter the URL of a movie booking website and get notified when it opens booking for a Cinema on the day you want.
 
 ![Movie Booking Use Case](screenshots/movie-use-case-notify-availability.jpg)
