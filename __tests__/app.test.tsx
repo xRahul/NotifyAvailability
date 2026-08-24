@@ -277,6 +277,23 @@ describe('App', () => {
     expect(mockStore.get('taskSet')).toBe('no');
   });
 
+  it('persists stop even when background stop rejects', async () => {
+    mockStore.set('url', 'https://example.com/product');
+    mockStore.set('searchText', 'In Stock');
+    mockStore.set('taskSet', 'yes');
+    mockedStopWatch.mockRejectedValueOnce(new Error('stop boom'));
+
+    const screen = await render(<App />);
+    await waitFor(() => expect(screen.getByText('Stop Checking')).toBeTruthy());
+
+    await fireEvent.press(screen.getByText('Stop Checking'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Start Checking')).toBeTruthy(),
+    );
+    expect(mockStore.get('taskSet')).toBe('no');
+  });
+
   it('passes dataDetectorTypes as an array for native codegen compatibility', async () => {
     mockStore.set('url', 'https://example.com/product');
     mockStore.set('taskSet', 'yes');

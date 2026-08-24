@@ -116,9 +116,14 @@ function App(): React.JSX.Element {
     setConfig(prev => ({ ...prev, taskSet: 'no' }));
     try {
       await stopWatch();
-      await saveWatchConfig({ taskSet: 'no' });
     } catch (error) {
       console.error('[App] stop failed', error);
+    } finally {
+      try {
+        await saveWatchConfig({ taskSet: 'no' });
+      } catch (error) {
+        console.error('[App] failed to persist stop', error);
+      }
     }
   };
 
