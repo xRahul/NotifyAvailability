@@ -3,23 +3,28 @@ name: Android Release Build
 on:
   workflow_dispatch:
   push:
+    branches:
+      - master
     tags:
       - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build-android-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Use Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: 'yarn'
@@ -41,8 +46,23 @@ jobs:
       - name: Build Android APK
         run: cd android && ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Publish tag release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v3
         with:
-          name: app-debug-${{ github.ref_name }}
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          tag_name: ${{ github.ref_name }}
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          body: |
+            Unsigned debug build for `${{ github.ref_name }}`, built in CI with the debug keystore. Treat as a test artifact until production signing lands.
+
+      - name: Publish rolling latest build
+        if: github.ref_type == 'branch'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: latest
+          name: Latest master build
+          prerelease: true
+          make_latest: false
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          body: |
+            Rolling unsigned debug APK built from master (commit ${{ github.sha }}). Assets are replaced on every merge to `master`.

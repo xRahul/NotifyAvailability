@@ -62,7 +62,7 @@ CI runs all three on Node 22 for every push and pull request (`.github/workflows
 cd android && ./gradlew assembleRelease
 ```
 
-Release builds currently sign with the debug keystore, so treat the output as a test artifact until production signing lands. The `android-debug.yml` workflow produces a debug APK on manual dispatch, and `android-release.yml` builds releases on `v*` tags.
+Release builds currently sign with the debug keystore, so treat the output as a test artifact until production signing lands. The `android-debug.yml` workflow produces a debug APK on manual dispatch, and `android-release.yml` cuts version releases on `v*` tags and republishes the rolling [`latest` pre-release](https://github.com/xRahul/NotifyAvailability/releases/download/latest/app-debug.apk) with a fresh debug APK on every merge to `master`.
 
 ## Architecture
 
