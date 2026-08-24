@@ -1,6 +1,6 @@
 # NotifyAvailability
 
-[![GitHub license](https://img.shields.io/github/license/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/blob/master/License.txt)
+[![GitHub license](https://img.shields.io/github/license/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/blob/master/LICENSE)
 [![Releases](https://img.shields.io/github/release/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/releases/latest)
 
 NotifyAvailability watches a webpage for you and posts a local notification when a piece of text appears on it. You pick a URL, the search text, and whether you care about presence or absence; the app re-checks about every 15 minutes in the background until you press Stop. The classic use case: get pinged when a movie booking site finally opens sales for your date.
@@ -62,7 +62,7 @@ CI runs all three on Node 22 for every push and pull request (`.github/workflows
 cd android && ./gradlew assembleRelease
 ```
 
-Release builds currently sign with the debug keystore, so treat the output as a test artifact until production signing lands. The `android-debug.yml` workflow produces a debug APK on manual dispatch, and `android-release.yml` cuts version releases on `v*` tags and republishes the rolling [`latest` pre-release](https://github.com/xRahul/NotifyAvailability/releases/download/latest/app-debug.apk) with a fresh debug APK on every merge to `master`.
+Release builds are signed in CI with a dedicated keystore supplied through four repository secrets (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`). When the secrets are absent, `android-release.yml` falls back to an unsigned debug-keystore artifact. The workflow cuts version releases on `v*` tags and republishes the rolling [`latest` pre-release](https://github.com/xRahul/NotifyAvailability/releases/tag/latest) with a fresh APK on every merge to `master`. To rotate the signing key: generate a new keystore and update the four secrets.
 
 ## Architecture
 
@@ -98,7 +98,6 @@ Storage keys have not changed since the 2019 app (`url`, `searchText`, `taskSet`
 - **Background cadence belongs to the OS** — Android's job scheduler enforces a 15-minute minimum interval and batches jobs under Doze, so checks can land later than the nominal ~15 minutes.
 - **Notification permission prompt** — the first Start triggers it. Notifications post to the channel id `availability`.
 - **iOS is a scaffold stub** — never built (`pod install` has not been run); `yarn ios` exists in package.json but expect nothing from it.
-- **Debug-keystore release signing** — production signing is deferred (see above).
 
 ## Use Case
 

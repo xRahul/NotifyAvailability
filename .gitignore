@@ -79,5 +79,8 @@ yarn-error.log
 .codegraph/
 .opencode/
 
+# CI-decoded release keystore (never commit)
+android/app/release.keystore
+
 # Local Metro bundle artifacts (use `yarn android` instead)
 android/app/src/main/assets/index.android.bundle
