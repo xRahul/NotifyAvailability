@@ -207,7 +207,7 @@ function App(): React.JSX.Element {
             ref={webViewRef}
             style={styles.webview}
             source={{ uri: config.url }}
-            dataDetectorTypes="all"
+            dataDetectorTypes={['all']}
             scalesPageToFit={false}
             userAgent={
               config.webPlatformType === WEB_PLATFORM_DESKTOP

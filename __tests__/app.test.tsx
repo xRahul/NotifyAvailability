@@ -51,17 +51,19 @@ jest.mock('react-native-notify-kit', () => ({
 }));
 
 const mockWebViewInstances: Array<{ reload: jest.Mock }> = [];
+const mockWebViewProps: Array<Record<string, unknown>> = [];
 
 jest.mock('react-native-webview', () => {
   const { forwardRef, useMemo, useImperativeHandle } = require('react');
   return {
     __esModule: true,
     default: forwardRef(function MockWebView(
-      _props: unknown,
+      props: Record<string, unknown>,
       ref: React.Ref<{ reload: () => void }>,
     ) {
       const impl = useMemo(() => ({ reload: jest.fn() }), []);
       mockWebViewInstances.push(impl);
+      mockWebViewProps.push(props);
       useImperativeHandle(ref, () => impl);
       return null;
     }),
@@ -138,6 +140,7 @@ describe('App', () => {
     mockStore.clear();
     jest.clearAllMocks();
     mockWebViewInstances.length = 0;
+    mockWebViewProps.length = 0;
     fetchMock.mockReset();
     fetchMock.mockResolvedValue({ text: async () => '<html>In Stock</html>' });
     globalThis.fetch = fetchMock as unknown as typeof globalThis.fetch;
@@ -272,6 +275,17 @@ describe('App', () => {
     );
     expect(mockedStopWatch).toHaveBeenCalledTimes(1);
     expect(mockStore.get('taskSet')).toBe('no');
+  });
+
+  it('passes dataDetectorTypes as an array for native codegen compatibility', async () => {
+    mockStore.set('url', 'https://example.com/product');
+    mockStore.set('taskSet', 'yes');
+
+    await render(<App />);
+    await waitFor(() => expect(mockWebViewProps.length).toBeGreaterThan(0));
+
+    expect(Array.isArray(mockWebViewProps[0].dataDetectorTypes)).toBe(true);
+    expect(mockWebViewProps[0].dataDetectorTypes).toEqual(['all']);
   });
 
   it('desktop picker change reloads WebView and persists platform', async () => {
