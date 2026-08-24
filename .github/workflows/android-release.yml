@@ -82,6 +82,17 @@ jobs:
           body: |
             Build of `${{ github.ref_name }}`. ${{ env.ANDROID_KEYSTORE_BASE64 != '' && 'Signed with the release keystore.' || 'Unsigned debug-keystore artifact (secrets not configured).' }}
 
+      # The rolling release replaces same-name assets but keeps differently
+      # named ones (e.g. after a debug→release variant switch), so purge old
+      # APK assets before publishing.
+      - name: Clear stale APK assets on latest
+        if: github.ref_type == 'branch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view latest --json assets --jq '.assets[].name' 2>/dev/null \
+            | grep '\.apk$' | xargs -r -n1 gh release delete-asset latest --yes || true
+
       - name: Publish rolling latest build
         if: github.ref_type == 'branch'
         uses: softprops/action-gh-release@v3
