@@ -1,5 +1,6 @@
 # NotifyAvailability
 
+[![CI](https://github.com/xRahul/NotifyAvailability/actions/workflows/ci.yml/badge.svg)](https://github.com/xRahul/NotifyAvailability/actions/workflows/ci.yml)
 [![GitHub license](https://img.shields.io/github/license/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/blob/master/LICENSE)
 [![Releases](https://img.shields.io/github/release/xRahul/NotifyAvailability.svg)](https://github.com/xRahul/NotifyAvailability/releases/latest)
 
