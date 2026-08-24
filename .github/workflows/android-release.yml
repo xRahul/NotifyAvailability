@@ -13,7 +13,8 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Only supersede branch (rolling latest) runs; never cancel in-flight tag releases.
+  cancel-in-progress: ${{ github.ref_type == 'branch' }}
 
 env:
   ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
