@@ -1,11 +1,12 @@
 buildscript {
     ext {
-        buildToolsVersion = "37.0.0"
+        buildToolsVersion = "36.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 37
+        compileSdkVersion = 36
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.4.0"
+        // Align with KSP 2.2.20-2.0.4 (Kotlin 2.2.20, latest patch that AsyncStorage supports) for Gradle 8.14.5 + AGP 8.12.3
+        kotlinVersion = "2.2.20"
     }
     repositories {
         google()
