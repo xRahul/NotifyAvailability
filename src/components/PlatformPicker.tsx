@@ -26,10 +26,12 @@ const PlatformPicker = ({
           selectedValue={selectedValue}
           onValueChange={onValueChange}
           accessibilityLabel="Platform picker"
+          dropdownIconColor="#94a3b8"
+          style={styles.pickerItem}
         >
-          <Picker.Item label="Mobile" value={WEB_PLATFORM_MOBILE} />
-          <Picker.Item label="Desktop" value={WEB_PLATFORM_DESKTOP} />
-          <Picker.Item label="Tablet" value={WEB_PLATFORM_TABLET} />
+          <Picker.Item label="Mobile" value={WEB_PLATFORM_MOBILE} style={styles.pickerItem} />
+          <Picker.Item label="Desktop" value={WEB_PLATFORM_DESKTOP} style={styles.pickerItem} />
+          <Picker.Item label="Tablet" value={WEB_PLATFORM_TABLET} style={styles.pickerItem} />
         </Picker>
       </View>
     </View>

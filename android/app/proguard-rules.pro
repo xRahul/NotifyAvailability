@@ -8,3 +8,16 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# React Native Background Fetch
+-keep class com.transistorsoft.tsbackgroundfetch.** { *; }
+
+# React Native Notify Kit / Notifee
+-keep class app.notifee.core.** { *; }
+-keep class io.invertase.notifee.** { *; }
+
+# React Native WebView
+-keep class com.reactnativecommunity.webview.** { *; }
+
+# React Native Async Storage
+-keep class com.reactnativecommunity.asyncstorage.** { *; }

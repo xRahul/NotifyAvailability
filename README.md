@@ -63,7 +63,7 @@ CI runs all three on Node 22 for every push and pull request (`.github/workflows
 cd android && ./gradlew assembleRelease
 ```
 
-Release builds are signed in CI with a dedicated keystore supplied through four repository secrets (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`). When the secrets are absent, `android-release.yml` falls back to an unsigned debug-keystore artifact. The workflow cuts version releases on `v*` tags and republishes the rolling [`latest` pre-release](https://github.com/xRahul/NotifyAvailability/releases/tag/latest) with a fresh APK on every merge to `master`. To rotate the signing key: generate a new keystore and update the four secrets.
+Release builds produce one APK per ABI (`armeabi-v7a`, `x86`, `arm64-v8a`, `x86_64`) instead of a single universal APK — roughly 20 MB each, and `arm64-v8a` covers most modern phones. Builds are signed in CI with a dedicated keystore supplied through four repository secrets (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`). When the secrets are absent, `android-release.yml` falls back to an unsigned debug-keystore artifact. The workflow cuts version releases on `v*` tags and republishes the rolling [`latest` pre-release](https://github.com/xRahul/NotifyAvailability/releases/tag/latest) with fresh per-ABI APKs on every merge to `master`. To rotate the signing key: generate a new keystore and update the four secrets.
 
 ## Architecture
 

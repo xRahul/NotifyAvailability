@@ -20,8 +20,20 @@ export async function runCheck(cfg: WatchConfig): Promise<CheckOutcome> {
       cfg.webPlatformType === WEB_PLATFORM_DESKTOP
         ? { 'User-Agent': USER_AGENT_DESKTOP }
         : undefined;
-    const response = await fetch(cfg.url, { headers });
-    html = await response.text();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+    try {
+      const response = await fetch(cfg.url, {
+        headers,
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        return { textFound: false, notified: false };
+      }
+      html = await response.text();
+    } finally {
+      clearTimeout(timeoutId);
+    }
   } catch {
     return { textFound: false, notified: false };
   }

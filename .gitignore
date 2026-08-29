@@ -40,6 +40,7 @@ local.properties
 node_modules/
 npm-debug.log
 yarn-error.log
+package-lock.json
 
 # fastlane
 #
@@ -78,9 +79,29 @@ yarn-error.log
 .superpowers/
 .codegraph/
 .opencode/
+improvements.md
 
 # CI-decoded release keystore (never commit)
 android/app/release.keystore
 
 # Local Metro bundle artifacts (use `yarn android` instead)
 android/app/src/main/assets/index.android.bundle
+# >>> opencode-config auto
+out/
+target/
+dist/
+coverage/
+kotlin-js-store/
+__pycache__/
+.venv/
+venv/
+.gradle/
+.dart_tool/
+.flutter-plugins-dependencies
+.idea/
+.vscode/
+.worktrees/
+*.apk
+*.aab
+.ruff_cache/
+# <<< opencode-config auto

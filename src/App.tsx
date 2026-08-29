@@ -2,11 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Button,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   Text,
   TextInput,
+  View,
 } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import WebView from 'react-native-webview';
 
 import UrlInput from './components/UrlInput';
@@ -142,88 +144,155 @@ function App(): React.JSX.Element {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" />
+        <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="always"
       >
-        <UrlInput
-          url={config.url}
-          setUrl={text => setConfig(prev => ({ ...prev, url: text }))}
-          persist={persist}
-          onSubmitEditing={handleUrlSubmit}
-        />
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Notify Availability</Text>
+          <Text style={styles.headerSubtitle}>
+            Monitor webpage keyword & stock availability in background
+          </Text>
+        </View>
 
-        <SearchInput
-          ref={searchTextInputRef}
-          searchText={config.searchText}
-          setSearchText={text =>
-            setConfig(prev => ({ ...prev, searchText: text }))
-          }
-          persist={persist}
-        />
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Target Configuration</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Webpage URL</Text>
+            <UrlInput
+              url={config.url}
+              setUrl={text => setConfig(prev => ({ ...prev, url: text }))}
+              persist={persist}
+              onSubmitEditing={handleUrlSubmit}
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Search String / Keyword</Text>
+            <SearchInput
+              ref={searchTextInputRef}
+              searchText={config.searchText}
+              setSearchText={text =>
+                setConfig(prev => ({ ...prev, searchText: text }))
+              }
+              persist={persist}
+            />
+          </View>
+        </View>
 
-        <SettingsSwitch
-          label="Case Sensitive Search:"
-          value={config.caseSensitiveSearch === 'yes'}
-          onValueChange={value => {
-            const valStr = value ? 'yes' : 'no';
-            setConfig(prev => ({ ...prev, caseSensitiveSearch: valStr }));
-            persist('caseSensitiveSearch', valStr);
-          }}
-        />
-
-        <SettingsSwitch
-          label="Search Absence of Text:"
-          value={config.searchAbsence === 'yes'}
-          onValueChange={value => {
-            const valStr = value ? 'yes' : 'no';
-            setConfig(prev => ({ ...prev, searchAbsence: valStr }));
-            persist('searchAbsence', valStr);
-          }}
-        />
-
-        <PlatformPicker
-          selectedValue={config.webPlatformType}
-          onValueChange={handlePlatformChange}
-        />
-
-        {urlError !== null && <Text style={styles.errorText}>{urlError}</Text>}
-
-        <Text style={styles.lastCheckedText}>
-          {`Last Checked: ${formatRelativeTime(config.lastChecked)}`}
-        </Text>
-
-        {config.taskSet === 'no' && (
-          <Button
-            title="Start Checking"
-            disabled={loading}
-            onPress={handleStart}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Watch Settings</Text>
+          <SettingsSwitch
+            label="Case Sensitive Search:"
+            value={config.caseSensitiveSearch === 'yes'}
+            onValueChange={value => {
+              const valStr = value ? 'yes' : 'no';
+              setConfig(prev => ({ ...prev, caseSensitiveSearch: valStr }));
+              persist('caseSensitiveSearch', valStr);
+            }}
           />
-        )}
-        {config.taskSet === 'yes' && (
-          <Button title="Stop Checking" onPress={handleStop} />
+          <View style={styles.divider} />
+          <SettingsSwitch
+            label="Search Absence of Text:"
+            value={config.searchAbsence === 'yes'}
+            onValueChange={value => {
+              const valStr = value ? 'yes' : 'no';
+              setConfig(prev => ({ ...prev, searchAbsence: valStr }));
+              persist('searchAbsence', valStr);
+            }}
+          />
+          <View style={styles.divider} />
+          <PlatformPicker
+            selectedValue={config.webPlatformType}
+            onValueChange={handlePlatformChange}
+          />
+        </View>
+
+        <View style={styles.statusCard}>
+          <View style={styles.statusRow}>
+            <Text style={styles.statusLabel}>Monitor Status:</Text>
+            <View
+              style={[
+                styles.statusBadge,
+                config.taskSet === 'yes'
+                  ? styles.statusBadgeActive
+                  : styles.statusBadgeIdle,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusBadgeText,
+                  config.taskSet === 'yes'
+                    ? styles.statusBadgeTextActive
+                    : styles.statusBadgeTextIdle,
+                ]}
+              >
+                {config.taskSet === 'yes' ? 'ACTIVE' : 'IDLE'}
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.lastCheckedText}>
+            {`Last Checked: ${formatRelativeTime(config.lastChecked)}`}
+          </Text>
+        </View>
+
+        {urlError !== null && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{urlError}</Text>
+          </View>
         )}
 
-        {loading && <ActivityIndicator size="large" color="#7a42f4" />}
+        <View style={styles.buttonContainer}>
+          {config.taskSet === 'no' && (
+            <Button
+              title="Start Checking"
+              disabled={loading}
+              onPress={handleStart}
+              color="#2563eb"
+            />
+          )}
+
+          {config.taskSet === 'yes' && (
+            <Button
+              title="Stop Checking"
+              onPress={handleStop}
+              color="#dc2626"
+            />
+          )}
+        </View>
+
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#3b82f6" />
+          </View>
+        )}
 
         {config.taskSet === 'yes' && config.url !== '' && (
-          <WebView
-            ref={webViewRef}
-            style={styles.webview}
-            source={{ uri: config.url }}
-            dataDetectorTypes={['all']}
-            scalesPageToFit={false}
-            userAgent={
-              config.webPlatformType === WEB_PLATFORM_DESKTOP
-                ? USER_AGENT_DESKTOP
-                : undefined
-            }
-          />
+          <View style={styles.webviewCard}>
+            <View style={styles.webviewHeader}>
+              <Text style={styles.webviewHeaderText}>Live Webpage Preview</Text>
+            </View>
+            <WebView
+              ref={webViewRef}
+              style={styles.webview}
+              source={{ uri: config.url }}
+              dataDetectorTypes={['all']}
+              scalesPageToFit={false}
+              userAgent={
+                config.webPlatformType === WEB_PLATFORM_DESKTOP
+                  ? USER_AGENT_DESKTOP
+                  : undefined
+              }
+            />
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>
+  </SafeAreaProvider>
   );
 }
 
 export default App;
+

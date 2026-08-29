@@ -26,3 +26,17 @@ export type CheckOutcome = {
   textFound: boolean;
   notified: boolean;
 };
+
+export interface WatchTarget {
+  id: string;
+  title: string;
+  url: string;
+  searchText: string;
+  caseSensitiveSearch: boolean;
+  searchAbsence: boolean;
+  webPlatformType: WebPlatformType;
+  enabled: boolean;
+  lastChecked?: string;
+  createdAt: number;
+}
+

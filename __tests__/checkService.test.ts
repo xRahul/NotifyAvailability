@@ -35,7 +35,7 @@ const URL = 'https://example.com/product';
 // case-insensitive matching while staying an exact-match miss.
 const HTML = '<html><body><p>Buy Widget — In Stock!</p></body></html>';
 
-type TextResponse = { text: () => Promise<string> };
+type TextResponse = { ok: boolean; text: () => Promise<string> };
 
 let fetchMock: jest.Mock<Promise<TextResponse>, [string, RequestInit?]>;
 
@@ -134,7 +134,7 @@ describe('runCheck', () => {
         searchAbsence,
         expected,
       ) => {
-        fetchMock.mockResolvedValue({ text: async () => HTML });
+        fetchMock.mockResolvedValue({ ok: true, text: async () => HTML });
         const outcome = await runCheck(
           makeCfg({ searchText, caseSensitiveSearch, searchAbsence }),
         );
@@ -161,7 +161,7 @@ describe('runCheck', () => {
 
   it('escapes regex special characters in case-insensitive search', async () => {
     // Unescaped, /n.st.ck/i would match "In Stock"; escaped it must not.
-    fetchMock.mockResolvedValue({ text: async () => HTML });
+    fetchMock.mockResolvedValue({ ok: true, text: async () => HTML });
 
     const outcome = await runCheck(
       makeCfg({
@@ -177,24 +177,26 @@ describe('runCheck', () => {
 
   describe('User-Agent header by platform', () => {
     it('sends desktop UA only when webPlatformType is desktop', async () => {
-      fetchMock.mockResolvedValue({ text: async () => HTML });
+      fetchMock.mockResolvedValue({ ok: true, text: async () => HTML });
 
       await runCheck(makeCfg({ webPlatformType: 'desktop' }));
 
       expect(fetchMock).toHaveBeenCalledWith(URL, {
         headers: { 'User-Agent': USER_AGENT_DESKTOP },
+        signal: expect.any(Object),
       });
     });
 
     it.each(['mobile', 'tablet'] as const)(
       'sends no custom headers for %s',
       async platform => {
-        fetchMock.mockResolvedValue({ text: async () => HTML });
+        fetchMock.mockResolvedValue({ ok: true, text: async () => HTML });
 
         await runCheck(makeCfg({ webPlatformType: platform }));
 
         expect(fetchMock).toHaveBeenCalledTimes(1);
         expect(fetchMock.mock.calls[0][1]?.headers).toBeUndefined();
+        expect(fetchMock.mock.calls[0][1]?.signal).toBeDefined();
       },
     );
   });
@@ -235,9 +237,28 @@ describe('runCheck', () => {
     });
   });
 
+  describe('HTTP error status codes', () => {
+    it.each([403, 404, 500, 503])(
+      'returns silent miss for HTTP %d error status without false absence notification',
+      async _statusCode => {
+        fetchMock.mockResolvedValue({
+          ok: false,
+          text: async () => '<html>Error Page</html>',
+        });
+
+        const outcome = await runCheck(makeCfg({ searchAbsence: 'yes' }));
+
+        expect(outcome).toEqual({ textFound: false, notified: false });
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(mockedSave).not.toHaveBeenCalled();
+        expect(mockedShow).not.toHaveBeenCalled();
+      },
+    );
+  });
+
   describe('storage failure after successful fetch', () => {
     it('rejects instead of reporting a found-text check as a miss', async () => {
-      fetchMock.mockResolvedValue({ text: async () => HTML });
+      fetchMock.mockResolvedValue({ ok: true, text: async () => HTML });
       mockedSave.mockRejectedValueOnce(new Error('storage down'));
 
       // HTML contains "In Stock"; the old catch-all swallowed the storage
@@ -250,6 +271,7 @@ describe('runCheck', () => {
   describe('lastChecked persistence', () => {
     it('persists Date.now on successful fetch regardless of match result', async () => {
       fetchMock.mockResolvedValue({
+        ok: true,
         text: async () => '<html>nothing here</html>',
       });
       const startedAt = Date.now();
@@ -266,7 +288,7 @@ describe('runCheck', () => {
     });
 
     it('persists lastChecked even when permission denied blocks notification', async () => {
-      fetchMock.mockResolvedValue({ text: async () => HTML });
+      fetchMock.mockResolvedValue({ ok: true, text: async () => HTML });
       mockedSetup.mockResolvedValue(false);
 
       const outcome = await runCheck(makeCfg());

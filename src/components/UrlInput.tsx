@@ -1,5 +1,6 @@
 import React from 'react';
 import { TextInput } from 'react-native';
+import styles from '../Styles';
 
 interface UrlInputProps {
   url: string;
@@ -11,6 +12,7 @@ interface UrlInputProps {
 const UrlInput = ({ url, setUrl, persist, onSubmitEditing }: UrlInputProps) => {
   return (
     <TextInput
+      style={styles.textInput}
       onChangeText={text => {
         setUrl(text);
       }}
@@ -22,6 +24,7 @@ const UrlInput = ({ url, setUrl, persist, onSubmitEditing }: UrlInputProps) => {
       enablesReturnKeyAutomatically
       keyboardType="url"
       placeholder="Enter URL https://..."
+      placeholderTextColor="#64748b"
       returnKeyType="next"
       blurOnSubmit={false}
       onSubmitEditing={onSubmitEditing}
@@ -31,3 +34,4 @@ const UrlInput = ({ url, setUrl, persist, onSubmitEditing }: UrlInputProps) => {
 };
 
 export default React.memo(UrlInput);
+

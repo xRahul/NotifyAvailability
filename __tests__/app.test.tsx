@@ -86,7 +86,7 @@ const mockedRequestPermission = notifee.requestPermission as jest.Mock;
 
 type Screen = Awaited<ReturnType<typeof render>>;
 
-type FetchResponse = { text: () => Promise<string> };
+type FetchResponse = { ok: boolean; text: () => Promise<string> };
 const fetchMock = jest.fn<Promise<FetchResponse>, [string]>();
 
 type TestNode = {
@@ -142,7 +142,10 @@ describe('App', () => {
     mockWebViewInstances.length = 0;
     mockWebViewProps.length = 0;
     fetchMock.mockReset();
-    fetchMock.mockResolvedValue({ text: async () => '<html>In Stock</html>' });
+    fetchMock.mockResolvedValue({
+      ok: true,
+      text: async () => '<html>In Stock</html>',
+    });
     globalThis.fetch = fetchMock as unknown as typeof globalThis.fetch;
     mockedRequestPermission.mockResolvedValue({ authorizationStatus: 1 });
     mockedStartWatch.mockResolvedValue(undefined);

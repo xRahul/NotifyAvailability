@@ -20,6 +20,8 @@ const SettingsSwitch = ({
         <Switch
           onValueChange={onValueChange}
           value={value}
+          trackColor={{ false: '#334155', true: '#2563eb' }}
+          thumbColor={value ? '#ffffff' : '#94a3b8'}
           accessibilityLabel={label}
         />
       </View>

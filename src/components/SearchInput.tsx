@@ -1,5 +1,6 @@
 import React, { forwardRef, memo } from 'react';
 import { TextInput } from 'react-native';
+import styles from '../Styles';
 
 interface SearchInputProps {
   searchText: string;
@@ -12,6 +13,7 @@ const SearchInput = memo(
     function SearchInputInner({ searchText, setSearchText, persist }, ref) {
       return (
         <TextInput
+          style={styles.textInput}
           onChangeText={text => {
             setSearchText(text);
           }}
@@ -22,6 +24,7 @@ const SearchInput = memo(
           autoCorrect={false}
           enablesReturnKeyAutomatically
           placeholder="Enter Search String"
+          placeholderTextColor="#64748b"
           accessibilityLabel="Search text input"
           ref={ref}
         />
@@ -31,3 +34,4 @@ const SearchInput = memo(
 );
 
 export default SearchInput;
+

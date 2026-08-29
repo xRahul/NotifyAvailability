@@ -39,10 +39,8 @@ jobs:
         run: |
           if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
             echo "variant=release" >> "$GITHUB_OUTPUT"
-            echo "file=app-release.apk" >> "$GITHUB_OUTPUT"
           else
             echo "variant=debug" >> "$GITHUB_OUTPUT"
-            echo "file=app-debug.apk" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Set up JDK 17
@@ -79,7 +77,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
-          files: android/app/build/outputs/apk/${{ steps.apk.outputs.variant }}/${{ steps.apk.outputs.file }}
+          files: android/app/build/outputs/apk/${{ steps.apk.outputs.variant }}/*.apk
           body: |
             Build of `${{ github.ref_name }}`. ${{ env.ANDROID_KEYSTORE_BASE64 != '' && 'Signed with the release keystore.' || 'Unsigned debug-keystore artifact (secrets not configured).' }}
 
@@ -102,6 +100,6 @@ jobs:
           name: Latest master build
           prerelease: true
           make_latest: false
-          files: android/app/build/outputs/apk/${{ steps.apk.outputs.variant }}/${{ steps.apk.outputs.file }}
+          files: android/app/build/outputs/apk/${{ steps.apk.outputs.variant }}/*.apk
           body: |
             Rolling APK built from master (commit ${{ github.sha }}). Assets are replaced on every merge to `master`. ${{ env.ANDROID_KEYSTORE_BASE64 != '' && 'Signed with the release keystore.' || 'Unsigned debug-keystore artifact (secrets not configured).' }}
