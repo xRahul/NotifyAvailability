@@ -1,0 +1,79 @@
+name: Signing Check
+
+# Verifies the release signing secrets without publishing anything: decodes the
+# keystore, builds a release APK, and asserts the certificate is the established
+# release key (not the debug key, and not a rotated key).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-signing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Materialize keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "ANDROID_KEYSTORE_BASE64 is empty"; exit 1
+          fi
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+          keytool -list -keystore "$RUNNER_TEMP/release.keystore" \
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" | grep -E "Your keystore contains|Alias name"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build release APK
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x android/gradlew
+          cd android && ./gradlew assembleRelease --no-daemon
+
+      - name: Verify certificate
+        run: |
+          set -euo pipefail
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          APK=$(ls android/app/build/outputs/apk/release/*arm64*v8a-release.apk)
+          "$APKSIGNER" verify --print-certs "$APK" | tee certs.txt
+          if grep -q "CN=Android Debug" certs.txt; then
+            echo "::error::release APK is signed with the debug key"
+            exit 1
+          fi
+          if ! grep -qi "c76bf54a39f116e0d8afd24e37df4e74b8bfc993e806b4b2c705dd8d41855023" certs.txt; then
+            echo "::error::certificate digest is not the established release key"
+            exit 1
+          fi
+          echo "Signing secrets verified: release key c76bf54a…5023"
+
+      - name: Upload certificate report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: certs
+          path: certs.txt
+          if-no-files-found: warn
