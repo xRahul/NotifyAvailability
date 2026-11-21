@@ -6,9 +6,6 @@ name: Signing Check
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - chore/verify-signing
 
 permissions:
   contents: read
